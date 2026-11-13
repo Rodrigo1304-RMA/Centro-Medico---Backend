@@ -1,0 +1,45 @@
+
+package CentroMedico.MicroCarrito;
+
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/cesta")
+public class Control {
+
+    @Autowired
+    private Servicio s;
+
+    @PostMapping("/agregar")
+    public Linea agregar(@RequestBody Linea lin) {
+        return s.agregar(lin);
+    }
+
+    @DeleteMapping("/quitar/{codLin}")
+    public void quitar(@PathVariable Long codLin) {
+        s.quitar(codLin);
+    }
+
+    @GetMapping("/listar")
+    public List<Linea> listar() {
+        return s.listar();
+    }
+
+    @DeleteMapping("/nuevo")
+    public void nuevo() {
+        s.nuevo();
+    }
+
+    @GetMapping("/total")
+    public int getTotalMinutos() {
+        return s.getTotalMinutos();
+    }
+}

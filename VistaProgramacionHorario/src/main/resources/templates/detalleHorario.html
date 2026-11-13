@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Centro Médico - Detalle de Horario</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; background-color: #f7f9fa; }
+        h2, h3 { color: #2c3e50; }
+        .card { background: white; padding: 25px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 25px; max-width: 750px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 15px; background: #fff; }
+        table, th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+        th { background-color: #eef2f5; }
+        .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; padding: 12px; border-radius: 4px; margin-bottom: 20px; max-width: 750px; }
+        .btn { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; color: white; background-color: #007bff; font-size: 14px; text-decoration: none; display: inline-block; }
+        .btn-secondary { background-color: #6c757d; }
+        .btn-secondary:hover { background-color: #545b62; }
+    </style>
+</head>
+<body>
+
+    <h2>Resultado de la Búsqueda de Horario</h2>
+
+    <!-- Mensaje cuando no existe o hay error -->
+    <div th:if="${msg != null}" class="alert-error">
+        <strong>Aviso: </strong><span th:text="${msg}"></span>
+    </div>
+
+    <!-- Detalle cuando sí se encuentra el horario -->
+    <div th:if="${horarioEncontrado != null}">
+        <div class="card">
+            <h3>Datos de Cabecera del Horario</h3>
+            <table>
+                <tr>
+                    <th style="width: 30%;">Código de Horario</th>
+                    <td th:text="${horarioEncontrado.codHor}"></td>
+                </tr>
+                <tr>
+                    <th>Fecha Asignada</th>
+                    <td th:text="${horarioEncontrado.fecAsig}"></td>
+                </tr>
+                <tr>
+                    <th>Estado</th>
+                    <td th:text="${horarioEncontrado.est}"></td>
+                </tr>
+                <tr>
+                    <th>Código del Médico</th>
+                    <td th:text="${horarioEncontrado.codEmp}"></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Lista de turnos generados asociados a ese horario -->
+        <div class="card" th:if="${turnos != null and !#lists.isEmpty(turnos)}">
+            <h3>Citas e Intervalos Generados</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>N° Turno (codInt)</th>
+                        <th>Hora / Franja</th>
+                        <th>Duración</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="t : ${turnos}">
+                        <td th:text="${t.codInt}"></td>
+                        <td th:text="${t.hora}"></td>
+                        <td th:text="${t.durMin} + ' min'"></td>
+                        <td th:text="${t.estLin}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <br>
+    <a th:href="@{/verBuscarHorario}" class="btn">Nueva Búsqueda</a>
+    <a th:href="@{/ver}" class="btn btn-secondary">← Volver a Programación</a>
+
+</body>
+</html>

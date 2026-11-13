@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Centro Médico - Programación de Horarios</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            body { font-family: Arial, sans-serif; margin: 30px; background-color: #f7f9fa; }
+            h2, h3 { color: #2c3e50; }
+            table { width: 100%; border-collapse: collapse; margin-bottom: 20px; background: #fff; }
+            table, th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+            th { background-color: #eef2f5; }
+            .card { background: white; padding: 20px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 25px; }
+            .btn { padding: 7px 15px; border: none; border-radius: 4px; cursor: pointer; color: white; background-color: #007bff; text-decoration: none; display: inline-block; }
+            .btn-danger { background-color: #dc3545; }
+            .btn-success { background-color: #28a745; font-size: 15px; }
+            .alert-success { background: #d4edda; color: #155724; padding: 12px; border-radius: 4px; margin-bottom: 20px; }
+            input { padding: 6px 10px; margin-right: 10px; border: 1px solid #ccc; border-radius: 4px; }
+        </style>
+    </head>
+    <body>
+        <h2>Gestión y Asignación de Horarios Médicos</h2>
+        
+        <div style="margin-bottom: 20px;">
+            <a th:href="@{/verBuscarHorario}" class="btn">🔍 Consultar Horario por Código</a>
+        </div>
+
+        <!-- Mensaje de éxito al confirmar -->
+        <div th:if="${param.success}" style="background-color: #d4edda; color: #155724; padding: 12px; border-radius: 4px; margin-bottom: 20px;">
+            ¡Horario consolidado y registrado exitosamente con MicroCompuesto!
+        </div>
+
+        <!-- Mensaje de error cuando MicroValidar rechaza el código de médico -->
+        <div th:if="${error}" style="background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; padding: 12px; border-radius: 4px; margin-bottom: 20px;">
+            <strong>Atención: </strong><span th:text="${error}"></span>
+        </div>
+
+        <!-- 1. Catálogo de Médicos y Consultas Disponibles -->
+        <div class="card">
+            <h3>1. Franjas Horarias / Consultas Disponibles (MicroCatalogo)</h3>
+
+            <!-- Formulario para agregar una nueva programación al MicroCatalogo -->
+            <form th:action="@{/catalogo/agregar}" method="post" style="display: flex; gap: 10px; margin-bottom: 15px; margin-top: 10px;">
+                <input type="text" name="esp" placeholder="Especialidad (ej: Psicología)" required>
+                <input type="text" name="med" placeholder="Nombre Médico (ej: Dr. Soto)" required>
+                <input type="text" name="con" placeholder="Consultorio (ej: C-103)" required>
+                <button type="submit" style="background-color: #2563eb; color: white; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer;">
+                    + Agregar Nueva Programación
+                </button>
+            </form>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Especialidad</th>
+                        <th>Médico</th>
+                        <th>Consultorio</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="c : ${catalogo}">
+                        <td th:text="${c.codProg}"></td>
+                        <td th:text="${c.esp}"></td>
+                        <td th:text="${c.med}"></td>
+                        <td th:text="${c.con}"></td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(catalogo)}">
+                        <td colspan="4" style="text-align: center; color: #777;">No hay registros cargados en catálogo.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+                <!-- Formulario para agregar una franja a la cesta -->
+                <h4>Agregar Franja a la Cesta</h4>
+                <form th:action="@{/cesta/agregar}" th:object="${nuevaLinea}" method="post">
+                    <input type="text" th:field="*{franja}" placeholder="Ej: Turno Mañana 08:00 - 08:15" required size="35"/>
+                    <input type="number" th:field="*{durMin}" placeholder="Duración (minutos)" required/>
+                    <input type="hidden" th:field="*{can}" value="1"/>
+                    <button type="submit" class="btn">Agregar a Cesta</button>
+                </form>
+            </div>
+
+        <!-- 2. Franjas Acumuladas en la Cesta -->
+        <div class="card">
+            <h3>2. Franjas Seleccionadas en Cesta (MicroCarrito)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Franja / Turno</th>
+                        <th>Minutos</th>
+                        <th>Cantidad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item : ${carrito}">
+                        <td th:text="${item.codLin}"></td>
+                        <td th:text="${item.franja}"></td>
+                        <td th:text="${item.durMin}"></td>
+                        <td th:text="${item.can}"></td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(carrito)}">
+                        <td colspan="4" style="text-align: center; color: #777;">No hay franjas en la cesta actualmente.</td>
+                    </tr>
+                </tbody>
+            </table>
+            <a th:href="@{/cesta/limpiar}" class="btn btn-danger">Vaciar Cesta</a>
+        </div>
+
+        <!-- 3. Confirmar Cabecera y Consolidar todo -->
+        <div class="card">
+            <h3>3. Datos de la Asignación (MicroCompuesto)</h3>
+            <form th:action="@{/compuesto/confirmar}" th:object="${horario}" method="post">
+                <label>Fecha Asignada:</label>
+                <input type="date" th:field="*{fecAsig}" required/>
+
+                <label>Estado:</label>
+                <input type="text" th:field="*{est}" value="Activo" required/>
+
+                <label>Médico Asignado:</label>
+                <select th:field="*{codEmp}" required style="padding: 6px 10px; border: 1px solid #ccc; border-radius: 4px;">
+                    <option value="" disabled selected>-- Seleccione un Médico --</option>
+                    <option th:each="m : ${catalogo}" 
+                            th:value="${m.codProg}" 
+                            th:text="${m.codProg + ' - ' + m.med + ' (' + m.esp + ')'}">
+                    </option>
+                </select>
+
+                <br><br>
+                <button type="submit" class="btn btn-success">Confirmar y Grabar Horario Compuesto</button>
+            </form>
+        </div>
+        
+        <!-- 4. Turnos e Intervalos Generados (MicroIntervalos) -->
+        <div class="card" th:if="${intervalos != null and !#lists.isEmpty(intervalos)}">
+            <h3>4. Citas e Intervalos Generados (MicroIntervalos)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>N° Turno</th>
+                        <th>Horario Ref.</th>
+                        <th>Hora / Franja</th>
+                        <th>Duración</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="i : ${intervalos}">
+                        <td th:text="${i.codInt}"></td>
+                        <td th:text="${i.codHor}"></td>
+                        <td th:text="${i.hora}"></td>
+                        <td th:text="${i.durMin} + ' min'"></td>
+                        <td th:text="${i.estLin}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </body>
+</html>
