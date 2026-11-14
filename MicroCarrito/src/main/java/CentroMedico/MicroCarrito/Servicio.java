@@ -1,4 +1,3 @@
-
 package CentroMedico.MicroCarrito;
 
 import java.util.List;
@@ -12,24 +11,34 @@ public class Servicio {
     private Repositorio r;
 
     public Linea agregar(Linea lin) {
+        if (lin.getCan() <= 0) {
+            lin.setCan(1);
+        }
+        if (lin.getDurMin() <= 0) {
+            lin.setDurMin(20);
+        }
         return r.save(lin);
     }
 
     public void quitar(Long codLin) {
         r.deleteById(codLin);
     }
+    
+    public void limpiar() {
+        r.deleteAll();
+    }
+    
+    public void nuevo() {
+        limpiar();
+    }
 
     public List<Linea> listar() {
         return r.findAll();
     }
 
-    public void nuevo() {
-        r.deleteAll();
-    }
-
     public int getTotalMinutos() {
         return r.findAll().stream()
-                .mapToInt(Linea::getSubTotalMinutos)
+                .mapToInt(Linea::getSubTotalMin)
                 .sum();
     }
 }

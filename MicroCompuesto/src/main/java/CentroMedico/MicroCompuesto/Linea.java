@@ -1,23 +1,28 @@
-
 package CentroMedico.MicroCompuesto;
 
 public class Linea {
 
     private Long codLin;
+    private Long codProg;
+    private Long codInt;
+    private String med;
+    private String esp;
     private String franja;
     private int durMin;
     private int can;
-    private Long codProg;
 
     public Linea() {
     }
 
-    public Linea(Long codLin, String franja, int durMin, int can, Long codProg) {
+    public Linea(Long codLin, Long codProg, Long codInt, String med, String esp, String franja, int durMin, int can) {
         this.codLin = codLin;
+        this.codProg = codProg;
+        this.codInt = codInt;
+        this.med = med;
+        this.esp = esp;
         this.franja = franja;
         this.durMin = durMin;
         this.can = can;
-        this.codProg = codProg;
     }
 
     public Long getCodLin() {
@@ -26,6 +31,38 @@ public class Linea {
 
     public void setCodLin(Long codLin) {
         this.codLin = codLin;
+    }
+
+    public Long getCodProg() {
+        return codProg;
+    }
+
+    public void setCodProg(Long codProg) {
+        this.codProg = codProg;
+    }
+
+    public Long getCodInt() {
+        return codInt;
+    }
+
+    public void setCodInt(Long codInt) {
+        this.codInt = codInt;
+    }
+
+    public String getMed() {
+        return med;
+    }
+
+    public void setMed(String med) {
+        this.med = med;
+    }
+
+    public String getEsp() {
+        return esp;
+    }
+
+    public void setEsp(String esp) {
+        this.esp = esp;
     }
 
     public String getFranja() {
@@ -50,13 +87,5 @@ public class Linea {
 
     public void setCan(int can) {
         this.can = can;
-    }
-
-    public Long getCodProg() {
-        return codProg;
-    }
-
-    public void setCodProg(Long codProg) {
-        this.codProg = codProg;
     }
 }

@@ -1,6 +1,7 @@
-
 package CentroMedico.MicroIntervalos;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,33 +17,54 @@ public class Servicio {
         return durMin > 0 && durMin <= 20;
     }
 
-    public List<IntervaloTurno> generar(Long codHor, int duracion) {
+    public List<IntervaloTurno> generarIntervalos20Min(Long codHor, String hIni, String hFin, int dur) {
         List<IntervaloTurno> lista = new ArrayList<>();
+        int duracionValida = validarLimite(dur) ? dur : 20;
 
-        if (validarLimite(duracion)) {
-            // Empieza a las 08:00
-            java.time.LocalTime horaActual = java.time.LocalTime.of(8, 0);
-            java.time.format.DateTimeFormatter formato = java.time.format.DateTimeFormatter.ofPattern("HH:mm");
+        LocalTime horaActual = LocalTime.of(8, 0);
+        LocalTime horaLimite = LocalTime.of(9, 20);
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("HH:mm");
 
-            // Genera por ejemplo 4 turnos sucesivos con la duración recibida
-            for (int i = 0; i < 4; i++) {
-                String horaStr = horaActual.format(formato);
-                IntervaloTurno it = new IntervaloTurno(null, codHor, horaStr, duracion, "Disponible");
-                lista.add(r.save(it));
-                
-                // Suma los minutos ingresados (10, 15, etc.) para el siguiente turno
-                horaActual = horaActual.plusMinutes(duracion);
+        try {
+            if (hIni != null && !hIni.isBlank()) {
+                horaActual = LocalTime.parse(hIni.trim(), formato);
             }
+            if (hFin != null && !hFin.isBlank()) {
+                horaLimite = LocalTime.parse(hFin.trim(), formato);
+            }
+        } catch (Exception e) {
+            horaActual = LocalTime.of(8, 0);
+            horaLimite = horaActual.plusMinutes(duracionValida * 4L);
         }
+
+        if (!horaLimite.isAfter(horaActual)) {
+            horaLimite = horaActual.plusMinutes(duracionValida * 4L);
+        }
+
+        while (!horaActual.plusMinutes(duracionValida).isAfter(horaLimite)) {
+            LocalTime siguienteHora = horaActual.plusMinutes(duracionValida);
+            String franjaTexto = horaActual.format(formato) + " - " + siguienteHora.format(formato);
+            IntervaloTurno it = new IntervaloTurno(null, codHor, franjaTexto, duracionValida, "Disponible");
+            lista.add(r.save(it));
+            horaActual = siguienteHora;
+        }
+
         return lista;
     }
-    
-    public IntervaloTurno registrarIntervaloDirecto(Long codHor, String horaInicio, int duracion) {
-        if (validarLimite(duracion)) {
-            IntervaloTurno it = new IntervaloTurno(null, codHor, horaInicio, duracion, "Disponible");
+
+    public IntervaloTurno registrarFranja(Long codHor, String hora, int dur) {
+        if (validarLimite(dur)) {
+            IntervaloTurno it = new IntervaloTurno(null, codHor, hora, dur, "Disponible");
             return r.save(it);
         }
         return null;
+    }
+
+    public IntervaloTurno actualizarEstadoIntervalo(Long codInt, String nuevoEst) {
+        return r.findById(codInt).map(it -> {
+            it.setEstLin(nuevoEst);
+            return r.save(it);
+        }).orElse(null);
     }
 
     public List<IntervaloTurno> listarPorHorario(Long codHor) {

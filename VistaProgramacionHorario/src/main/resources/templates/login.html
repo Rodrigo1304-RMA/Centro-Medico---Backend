@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clínica San Gabriel - Acceso al Sistema</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f4c81 0%, #1e3a8a 50%, #0f172a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+        .clinical-card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+            overflow: hidden;
+        }
+        .brand-panel {
+            background: linear-gradient(160deg, #0284c7 0%, #0f4c81 100%);
+            color: white;
+            padding: 2.5rem;
+        }
+        .role-badge {
+            font-size: 0.75rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-xl-10 col-lg-11">
+            <div class="card clinical-card">
+                <div class="row g-0">
+                    <!-- Panel Izquierdo Institucional -->
+                    <div class="col-lg-5 brand-panel d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="d-flex align-items-center mb-4">
+                                <div class="bg-white text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 52px; height: 52px;">
+                                    <i class="fa-solid fa-hospital-user fs-3"></i>
+                                </div>
+                                <div>
+                                    <h4 class="mb-0 fw-bold">Centro Médico</h4>
+                                    <small class="text-white-50">Arquitectura de Microservicios BFF</small>
+                                </div>
+                            </div>
+                            <h5 class="fw-semibold mb-3">Sistema de Programación de Horarios y Reserva de Citas</h5>
+                            <p class="small text-white-50 mb-4">
+                                Plataforma clínica distribuida conectada con Eureka Server, MicroCompuesto, MicroValidar, MicroCatalogo, MicroIntervalos, MicroCarrito y MicroHorario.
+                            </p>
+
+                            <!-- Credenciales rápidas precargadas en MicroValidar -->
+                            <div class="bg-dark bg-opacity-25 rounded-3 p-3 mb-3">
+                                <h6 class="small fw-bold text-uppercase mb-2">
+                                    <i class="fa-solid fa-key me-1"></i> Accesos Rápidos Registrados
+                                </h6>
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-borderless text-white small mb-0">
+                                        <thead>
+                                            <tr class="border-bottom border-light border-opacity-25">
+                                                <th>Código</th>
+                                                <th>Nombre</th>
+                                                <th>Rol</th>
+                                                <th>Clave</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="u : ${usuariosDemo}">
+                                                <td class="fw-bold" th:text="${u.codEmp}">1</td>
+                                                <td th:text="${u.nom}">Usuario</td>
+                                                <td>
+                                                    <span class="badge bg-light text-dark" th:text="${u.car}">ROL</span>
+                                                </td>
+                                                <td><code class="text-warning" th:text="${u.pas}">123456</code></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="small text-white-50">
+                            <i class="fa-solid fa-shield-heart me-1"></i> Validación Multi-Rol Activa (Empleado / Médico / Paciente)
+                        </div>
+                    </div>
+
+                    <!-- Panel Derecho de Formularios -->
+                    <div class="col-lg-7 bg-white p-4 p-md-5">
+                        <!-- Alertas -->
+                        <div th:if="${exito}" class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fa-solid fa-circle-check me-2"></i><span th:text="${exito}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fa-solid fa-triangle-exclamation me-2"></i><span th:text="${error}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+
+                        <!-- Pestañas Login / Registro -->
+                        <ul class="nav nav-pills nav-fill mb-4 bg-light p-1 rounded-3" id="authTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active fw-semibold" id="login-tab" data-bs-toggle="pill" data-bs-target="#loginPane" type="button" role="tab">
+                                    <i class="fa-solid fa-right-to-bracket me-1"></i> Iniciar Sesión
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link fw-semibold" id="register-tab" data-bs-toggle="pill" data-bs-target="#registerPane" type="button" role="tab">
+                                    <i class="fa-solid fa-user-plus me-1"></i> Registrar Nuevo Usuario
+                                </button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content">
+                            <!-- TAB 1: LOGIN -->
+                            <div class="tab-pane fade show active" id="loginPane" role="tabpanel">
+                                <h5 class="fw-bold text-dark mb-1">Bienvenido al Portal Clínico</h5>
+                                <p class="text-muted small mb-4">Ingrese su Código de Usuario (`codEmp`) y contraseña para acceder según su rol.</p>
+
+                                <form th:action="@{/login}" method="post">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold small">Código de Usuario (ID)</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i class="fa-solid fa-id-badge text-primary"></i></span>
+                                            <input type="number" name="codUsu" class="form-control" placeholder="Ej: 1 (Empleado), 2 (Médico), 4 (Paciente)" required>
+                                        </div>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label class="form-label fw-semibold small">Contraseña</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i class="fa-solid fa-lock text-primary"></i></span>
+                                            <input type="password" name="pas" class="form-control" value="123456" required>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">
+                                        <i class="fa-solid fa-stethoscope me-2"></i> Ingresar al Sistema
+                                    </button>
+                                </form>
+                            </div>
+
+                            <!-- TAB 2: REGISTRO DE USUARIO (3 ROLES) -->
+                            <div class="tab-pane fade" id="registerPane" role="tabpanel">
+                                <h5 class="fw-bold text-dark mb-1">Alta de Personal, Médico o Paciente</h5>
+                                <p class="text-muted small mb-3">Se registrará en `MicroValidar` a través del orquestador `MicroCompuesto`.</p>
+
+                                <form th:action="@{/registrarUsuario}" th:object="${nuevoUsuario}" method="post">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold small">Nombre Completo</label>
+                                        <input type="text" th:field="*{nom}" class="form-control" placeholder="Ej: Dr. Ricardo Palma / María Torres" required>
+                                    </div>
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold small">Rol en el Centro Médico</label>
+                                            <select th:field="*{car}" class="form-select" required>
+                                                <option value="PACIENTE">PACIENTE (Reserva Citas)</option>
+                                                <option value="MEDICO">MEDICO (Atiende Agenda)</option>
+                                                <option value="EMPLEADO">EMPLEADO (Programa Horarios)</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-semibold small">Especialidad / Área</label>
+                                            <input type="text" th:field="*{espMedica}" class="form-control" placeholder="Ej: Cardiología, Pediatría, General">
+                                        </div>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label class="form-label fw-semibold small">Contraseña de Acceso</label>
+                                        <input type="password" th:field="*{pas}" class="form-control" placeholder="Ingrese una clave" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-success w-100 py-2 fw-semibold">
+                                        <i class="fa-solid fa-check-double me-1"></i> Crear Cuenta en MicroValidar
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

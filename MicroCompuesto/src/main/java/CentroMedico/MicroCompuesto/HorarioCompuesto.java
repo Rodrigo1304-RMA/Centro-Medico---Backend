@@ -1,4 +1,3 @@
-
 package CentroMedico.MicroCompuesto;
 
 import java.util.List;

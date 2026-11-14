@@ -1,4 +1,3 @@
-
 package CentroMedico.MicroIntervalos;
 
 import jakarta.persistence.Entity;

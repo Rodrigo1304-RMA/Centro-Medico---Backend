@@ -1,4 +1,3 @@
-
 package CentroMedico.MicroHorario;
 
 import jakarta.persistence.Entity;
@@ -13,23 +12,25 @@ public class Horario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long codHor;
     private String fecAsig;
+    private String horaCita;
+    private String esp;
+    private String med;
+    private String nomPaciente;
     private String est;
-    private Long codEmp;    
-    private String med;       
-    private String esp;        
-    private String con;        
+    private Long codEmp;       
 
     public Horario() {
     }
 
-    public Horario(Long codHor, String fecAsig, String est, Long codEmp, String med, String esp, String con) {
+    public Horario(Long codHor, String fecAsig, String horaCita, String esp, String med, String nomPaciente, String est, Long codEmp) {
         this.codHor = codHor;
         this.fecAsig = fecAsig;
+        this.horaCita = horaCita;
+        this.esp = esp;
+        this.med = med;
+        this.nomPaciente = nomPaciente;
         this.est = est;
         this.codEmp = codEmp;
-        this.med = med;
-        this.esp = esp;
-        this.con = con;
     }
 
     public Long getCodHor() {
@@ -48,6 +49,38 @@ public class Horario {
         this.fecAsig = fecAsig;
     }
 
+    public String getHoraCita() {
+        return horaCita;
+    }
+
+    public void setHoraCita(String horaCita) {
+        this.horaCita = horaCita;
+    }
+
+    public String getEsp() {
+        return esp;
+    }
+
+    public void setEsp(String esp) {
+        this.esp = esp;
+    }
+
+    public String getMed() {
+        return med;
+    }
+
+    public void setMed(String med) {
+        this.med = med;
+    }
+
+    public String getNomPaciente() {
+        return nomPaciente;
+    }
+
+    public void setNomPaciente(String nomPaciente) {
+        this.nomPaciente = nomPaciente;
+    }
+
     public String getEst() {
         return est;
     }
@@ -62,29 +95,5 @@ public class Horario {
 
     public void setCodEmp(Long codEmp) {
         this.codEmp = codEmp;
-    }
-
-    public String getMed() {
-        return med;
-    }
-
-    public void setMed(String med) {
-        this.med = med;
-    }
-
-    public String getEsp() {
-        return esp;
-    }
-
-    public void setEsp(String esp) {
-        this.esp = esp;
-    }
-
-    public String getCon() {
-        return con;
-    }
-
-    public void setCon(String con) {
-        this.con = con;
     }
 }

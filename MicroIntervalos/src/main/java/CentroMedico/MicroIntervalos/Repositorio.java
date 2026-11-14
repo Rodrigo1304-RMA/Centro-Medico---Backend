@@ -1,4 +1,3 @@
-
 package CentroMedico.MicroIntervalos;
 
 import java.util.List;

@@ -1,4 +1,3 @@
-
 package CentroMedico.MicroCarrito;
 
 import java.util.List;
@@ -28,14 +27,14 @@ public class Control {
         s.quitar(codLin);
     }
 
+    @DeleteMapping({"/limpiar", "/nuevo"})
+    public void limpiar() {
+        s.limpiar();
+    }
+
     @GetMapping("/listar")
     public List<Linea> listar() {
         return s.listar();
-    }
-
-    @DeleteMapping("/nuevo")
-    public void nuevo() {
-        s.nuevo();
     }
 
     @GetMapping("/total")

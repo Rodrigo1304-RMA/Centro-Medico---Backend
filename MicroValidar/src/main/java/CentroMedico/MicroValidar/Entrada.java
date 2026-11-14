@@ -1,4 +1,3 @@
-
 package CentroMedico.MicroValidar;
 
 public class Entrada {

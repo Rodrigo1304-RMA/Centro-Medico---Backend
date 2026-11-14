@@ -1,0 +1,4 @@
+
+**/nbactions.tmp
+**/data/*.lock.db
+**/data/*.trace.db

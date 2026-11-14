@@ -19,43 +19,43 @@ public class IntervaloTurno {
         this.estLin = estLin;
     }
 
-    public Long getCodInt() { 
-        return codInt; 
+    public Long getCodInt() {
+        return codInt;
     }
-    
+
     public void setCodInt(Long codInt) {
-        this.codInt = codInt; 
+        this.codInt = codInt;
     }
 
     public Long getCodHor() {
-        return codHor; 
+        return codHor;
     }
-    
+
     public void setCodHor(Long codHor) {
         this.codHor = codHor;
     }
 
-    public String getHora() { 
-        return hora; 
-    }
-    
-    public void setHora(String hora) {
-        this.hora = hora; 
+    public String getHora() {
+        return hora;
     }
 
-    public int getDurMin() { 
-        return durMin; 
+    public void setHora(String hora) {
+        this.hora = hora;
     }
-    
+
+    public int getDurMin() {
+        return durMin;
+    }
+
     public void setDurMin(int durMin) {
-        this.durMin = durMin; 
+        this.durMin = durMin;
     }
 
     public String getEstLin() {
-        return estLin; 
+        return estLin;
     }
-    
+
     public void setEstLin(String estLin) {
-        this.estLin = estLin; 
+        this.estLin = estLin;
     }
 }
