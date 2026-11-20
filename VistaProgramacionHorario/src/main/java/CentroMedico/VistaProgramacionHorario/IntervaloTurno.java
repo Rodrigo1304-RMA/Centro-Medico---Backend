@@ -2,8 +2,8 @@ package CentroMedico.VistaProgramacionHorario;
 
 public class IntervaloTurno {
 
-    private Long codInt;
-    private Long codHor;
+    private Long idInt;
+    private Long idHor;
     private String hora;
     private int durMin;
     private String estLin;
@@ -11,51 +11,51 @@ public class IntervaloTurno {
     public IntervaloTurno() {
     }
 
-    public IntervaloTurno(Long codInt, Long codHor, String hora, int durMin, String estLin) {
-        this.codInt = codInt;
-        this.codHor = codHor;
+    public IntervaloTurno(Long idInt, Long idHor, String hora, int durMin, String estLin) {
+        this.idInt = idInt;
+        this.idHor = idHor;
         this.hora = hora;
         this.durMin = durMin;
         this.estLin = estLin;
     }
 
-    public Long getCodInt() {
-        return codInt;
+    public Long getIdInt() { 
+        return idInt;
+    }
+    
+    public void setIdInt(Long idInt) {
+        this.idInt = idInt;
     }
 
-    public void setCodInt(Long codInt) {
-        this.codInt = codInt;
+    public Long getIdHor() {
+        return idHor; 
     }
-
-    public Long getCodHor() {
-        return codHor;
-    }
-
-    public void setCodHor(Long codHor) {
-        this.codHor = codHor;
+    
+    public void setIdHor(Long idHor) {
+        this.idHor = idHor; 
     }
 
     public String getHora() {
-        return hora;
+        return hora; 
     }
-
+    
     public void setHora(String hora) {
-        this.hora = hora;
+        this.hora = hora; 
     }
 
     public int getDurMin() {
-        return durMin;
+        return durMin; 
     }
-
-    public void setDurMin(int durMin) {
+    
+    public void setDurMin(int durMin) { 
         this.durMin = durMin;
     }
 
-    public String getEstLin() {
+    public String getEstLin() { 
         return estLin;
     }
-
-    public void setEstLin(String estLin) {
-        this.estLin = estLin;
+    
+    public void setEstLin(String estLin) { 
+        this.estLin = estLin; 
     }
 }

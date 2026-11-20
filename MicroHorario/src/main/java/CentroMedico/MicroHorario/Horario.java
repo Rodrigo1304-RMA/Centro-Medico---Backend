@@ -10,35 +10,37 @@ public class Horario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long codHor;
+    private Long idHor;
     private String fecAsig;
     private String horaCita;
     private String esp;
     private String med;
     private String nomPaciente;
+    private int duracionMinutos;
     private String est;
-    private Long codEmp;       
+    private Long idEmp;
 
     public Horario() {
     }
 
-    public Horario(Long codHor, String fecAsig, String horaCita, String esp, String med, String nomPaciente, String est, Long codEmp) {
-        this.codHor = codHor;
+    public Horario(Long idHor, String fecAsig, String horaCita, String esp, String med, String nomPaciente, int duracionMinutos, String est, Long idEmp) {
+        this.idHor = idHor;
         this.fecAsig = fecAsig;
         this.horaCita = horaCita;
         this.esp = esp;
         this.med = med;
         this.nomPaciente = nomPaciente;
+        this.duracionMinutos = duracionMinutos;
         this.est = est;
-        this.codEmp = codEmp;
+        this.idEmp = idEmp;
     }
 
-    public Long getCodHor() {
-        return codHor;
+    public Long getIdHor() {
+        return idHor;
     }
 
-    public void setCodHor(Long codHor) {
-        this.codHor = codHor;
+    public void setIdHor(Long idHor) {
+        this.idHor = idHor;
     }
 
     public String getFecAsig() {
@@ -81,6 +83,14 @@ public class Horario {
         this.nomPaciente = nomPaciente;
     }
 
+    public int getDuracionMinutos() {
+        return duracionMinutos;
+    }
+
+    public void setDuracionMinutos(int duracionMinutos) {
+        this.duracionMinutos = duracionMinutos;
+    }
+
     public String getEst() {
         return est;
     }
@@ -89,11 +99,11 @@ public class Horario {
         this.est = est;
     }
 
-    public Long getCodEmp() {
-        return codEmp;
+    public Long getIdEmp() {
+        return idEmp;
     }
 
-    public void setCodEmp(Long codEmp) {
-        this.codEmp = codEmp;
+    public void setIdEmp(Long idEmp) {
+        this.idEmp = idEmp;
     }
 }

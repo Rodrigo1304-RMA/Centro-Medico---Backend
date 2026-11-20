@@ -38,12 +38,12 @@ public class Servicio {
         return r.save(p);
     }
 
-    public void eliminar(Long codProg) {
-        r.deleteById(codProg);
+    public void eliminar(Long idProg) {
+        r.deleteById(idProg);
     }
 
-    public ProgramacionHorario buscar(Long codProg) {
-        return r.findById(codProg).orElse(null);
+    public ProgramacionHorario buscar(Long idProg) {
+        return r.findById(idProg).orElse(null);
     }
 
     public List<ProgramacionHorario> listarPorEspecialidadYFecha(String esp, String fecManana) {
@@ -60,8 +60,8 @@ public class Servicio {
         return r.findAll();
     }
 
-    public ProgramacionHorario actualizar(Long codProg, ProgramacionHorario p) {
-        return r.findById(codProg).map(x -> {
+    public ProgramacionHorario actualizar(Long idProg, ProgramacionHorario p) {
+        return r.findById(idProg).map(x -> {
             x.setEsp(p.getEsp());
             x.setMed(p.getMed());
             x.setFecAtencion(p.getFecAtencion());

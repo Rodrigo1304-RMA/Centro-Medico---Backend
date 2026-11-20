@@ -50,11 +50,11 @@
             </div>
         </a>
 
-        <!-- Buscador rápido de Cita / Horario por Código -->
+        <!-- Buscador rápido de Cita / Horario por ID -->
         <form th:action="@{/buscarHorario}" method="post" class="d-flex my-2 my-lg-0 mx-lg-4">
             <div class="input-group input-group-sm">
                 <span class="input-group-text bg-white border-0"><i class="fa-solid fa-magnifying-glass text-primary"></i></span>
-                <input type="number" name="codHor" class="form-control border-0" placeholder="Buscar Cita/Horario por Código..." required>
+                <input type="number" name="idHor" class="form-control border-0" placeholder="Buscar Cita/Horario por idHor..." required>
                 <button class="btn btn-info text-white fw-semibold" type="submit">Consultar</button>
             </div>
         </form>
@@ -63,7 +63,7 @@
         <div class="d-flex align-items-center text-white">
             <div class="me-3 text-end">
                 <div class="fw-bold small" th:text="${usuario.nom}">Nombre Usuario</div>
-                <span class="badge bg-warning text-dark" th:text="${'ROL: ' + usuario.car + ' (ID: ' + usuario.codEmp + ')'}">ROL</span>
+                <span class="badge bg-warning text-dark" th:text="${'ROL: ' + usuario.car + ' (idEmp: ' + usuario.idEmp + ')'}">ROL</span>
             </div>
             <a th:href="@{/logout}" class="btn btn-outline-light btn-sm">
                 <i class="fa-solid fa-power-off me-1"></i> Salir
@@ -86,14 +86,14 @@
 
     <!-- Navegación de Módulos por Rol -->
     <ul class="nav nav-pills mb-4 bg-white p-2 rounded-3 shadow-sm" id="roleTabs" role="tablist">
-        <li class="nav-item me-2" role="presentation">
+        <li class="nav-item me-2" role="presentation" th:if="${usuario.car == 'EMPLEADO'}">
             <button class="nav-link fw-semibold"
                     th:classappend="${usuario.car == 'EMPLEADO' ? 'active' : ''}"
                     id="tab-empleado-btn" data-bs-toggle="pill" data-bs-target="#pane-empleado" type="button" role="tab">
                 <i class="fa-solid fa-calendar-plus me-1"></i> 1. Rol Empleado: Programar Horarios (Día Siguiente)
             </button>
         </li>
-        <li class="nav-item me-2" role="presentation">
+        <li class="nav-item me-2" role="presentation" th:if="${usuario.car == 'PACIENTE' or usuario.car == 'EMPLEADO'}">
             <button class="nav-link fw-semibold"
                     th:classappend="${usuario.car == 'PACIENTE' ? 'active' : ''}"
                     id="tab-paciente-btn" data-bs-toggle="pill" data-bs-target="#pane-paciente" type="button" role="tab">
@@ -101,7 +101,7 @@
                 <span class="badge bg-danger ms-1" th:text="${#lists.size(carrito)}">0</span>
             </button>
         </li>
-        <li class="nav-item" role="presentation">
+        <li class="nav-item" role="presentation" th:if="${usuario.car == 'MEDICO'}">
             <button class="nav-link fw-semibold"
                     th:classappend="${usuario.car == 'MEDICO' ? 'active' : ''}"
                     id="tab-medico-btn" data-bs-toggle="pill" data-bs-target="#pane-medico" type="button" role="tab">
@@ -112,19 +112,17 @@
 
     <div class="tab-content">
 
-        <!-- ======================================================================= -->
-        <!-- PESTAÑA 1: ROL EMPLEADO (PROGRAMAR OFERTA DEL DÍA SIGUIENTE E INTERVALOS) -->
-        <!-- ======================================================================= -->
-        <div class="tab-pane fade" th:classappend="${usuario.car == 'EMPLEADO' ? 'show active' : ''}" id="pane-empleado" role="tabpanel">
+        <!-- PESTAÑA 1: ROL EMPLEADO -->
+        <div class="tab-pane fade" th:if="${usuario.car == 'EMPLEADO'}" th:classappend="${usuario.car == 'EMPLEADO' ? 'show active' : ''}" id="pane-empleado" role="tabpanel">
             <div class="row g-4">
                 <!-- Formulario Programación Día Siguiente -->
                 <div class="col-lg-4">
                     <div class="card card-clinical h-100">
-                        <div class="card-header-clinical">
-                            <h6 class="mb-0 fw-bold text-primary">
+                        <div class="card-header-clinical text-primary">
+                            <h6 class="mb-0 fw-bold">
                                 <i class="fa-solid fa-clock-rotate-left me-2"></i>Programar Horario Médico (Día Siguiente)
                             </h6>
-                            <small class="text-muted">Consume `MicroCatalogo` (8081) y genera turnos &le; 20 min en `MicroIntervalos` (8083)</small>
+                            <small class="text-muted">Consume <code>MicroCatalogo</code> (8081) y genera intervalos de 10, 15 o 20 min en <code>MicroIntervalos</code> (8083)</small>
                         </div>
                         <div class="card-body">
                             <form th:action="@{/programarHorarioDiaSiguiente}" method="post">
@@ -134,12 +132,12 @@
                                         <option value="" disabled selected>-- Seleccione un Médico --</option>
                                         <option th:each="med : ${medicos}"
                                                 th:value="${med.nom}"
-                                                th:text="${med.nom + ' (' + med.espMedica + ')'}">Dr. Soto</option>
+                                                th:text="${med.nom}">Dr. Carlos Soto</option>
                                     </select>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label small fw-semibold">Especialidad Médica</label>
-                                    <input type="text" name="esp" class="form-control" placeholder="Ej: Cardiología, Pediatría, Psicología" required>
+                                    <input type="text" name="esp" class="form-control" placeholder="Ej: Cardiología, Pediatría, General" required>
                                 </div>
                                 <div class="row g-2 mb-3">
                                     <div class="col-md-6">
@@ -152,18 +150,26 @@
                                     </div>
                                 </div>
                                 <div class="row g-2 mb-3">
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <label class="form-label small fw-semibold">Hora Inicio</label>
                                         <input type="time" name="horaInicio" class="form-control" value="08:00" required>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <label class="form-label small fw-semibold">Hora Fin</label>
-                                        <input type="time" name="horaFin" class="form-control" value="09:20" required>
+                                        <input type="time" name="horaFin" class="form-control" value="09:00" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label small fw-semibold">Duración (min)</label>
+                                        <select name="dur" class="form-select" required>
+                                            <option value="10">10 min</option>
+                                            <option value="15">15 min</option>
+                                            <option value="20" selected>20 min</option>
+                                        </select>
                                     </div>
                                 </div>
-                                <input type="hidden" name="estAtencion" value="Programado">
+                                <input type="hidden" name="estAtencion" value="PROGRAMADO">
                                 <button type="submit" class="btn btn-primary w-100 fw-semibold">
-                                    <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Grabar Oferta y Generar Intervalos (20 min)
+                                    <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Grabar Oferta y Generar Intervalos
                                 </button>
                             </form>
                         </div>
@@ -176,47 +182,47 @@
                         <div class="card-header-clinical d-flex justify-content-between align-items-center">
                             <div>
                                 <h6 class="mb-0 fw-bold text-dark">
-                                    <i class="fa-solid fa-clipboard-list me-2 text-primary"></i>Catálogo de Programaciones Médicas (`MicroCatalogo`)
+                                    <i class="fa-solid fa-clipboard-list me-2 text-primary"></i>Catálogo de Programaciones Médicas (<code>MicroCatalogo</code>)
                                 </h6>
-                                <small class="text-muted">Seleccione "Ver Intervalos" para inspeccionar o reservar los turnos de 20 minutos.</small>
+                                <small class="text-muted">Seleccione "Ver Turnos" para inspeccionar los intervalos de 10, 15 o 20 minutos.</small>
                             </div>
-                            <span class="badge bg-primary" th:text="${#lists.size(catalogo) + ' programaciones'}">0</span>
+                            <span class="badge bg-primary" th:text="${#lists.size(catalogo) + ' programaciones'}">0 programaciones</span>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table table-hover align-middle mb-0">
                                     <thead class="table-light small text-uppercase">
-                                        <tr>
-                                            <th>Cód. (`codProg`)</th>
-                                            <th>Especialidad</th>
-                                            <th>Médico</th>
-                                            <th>Fecha Atención</th>
-                                            <th>Horario</th>
-                                            <th>Consultorio</th>
-                                            <th>Estado</th>
-                                            <th>Turnos</th>
-                                        </tr>
+                                    <tr>
+                                        <th>ID (<code>idProg</code>)</th>
+                                        <th>Especialidad</th>
+                                        <th>Médico</th>
+                                        <th>Fecha Atención</th>
+                                        <th>Horario</th>
+                                        <th>Consultorio</th>
+                                        <th>Estado</th>
+                                        <th>Turnos</th>
+                                    </tr>
                                     </thead>
                                     <tbody>
-                                        <tr th:each="c : ${catalogo}">
-                                            <td class="fw-bold text-primary" th:text="${'#' + c.codProg}">#1</td>
-                                            <td><span class="badge bg-info bg-opacity-10 text-primary border border-info" th:text="${c.esp}">Cardiología</span></td>
-                                            <td class="fw-semibold" th:text="${c.med}">Dr. Soto</td>
-                                            <td th:text="${c.fecAtencion}">2026-11-14</td>
-                                            <td th:text="${c.horaInicio + ' - ' + c.horaFin}">08:00 - 09:20</td>
-                                            <td th:text="${c.con}">C-101</td>
-                                            <td><span class="badge bg-success" th:text="${c.estAtencion}">Programado</span></td>
-                                            <td>
-                                                <a th:href="@{/ver(codHor=${c.codProg})}" class="btn btn-sm btn-outline-primary">
-                                                    <i class="fa-regular fa-clock me-1"></i> Ver Turnos
-                                                </a>
-                                            </td>
-                                        </tr>
-                                        <tr th:if="${#lists.isEmpty(catalogo)}">
-                                            <td colspan="8" class="text-center text-muted py-4">
-                                                No hay programaciones registradas aún. Utilice el formulario izquierdo para crear la primera programación.
-                                            </td>
-                                        </tr>
+                                    <tr th:each="c : ${catalogo}">
+                                        <td class="fw-bold text-primary" th:text="${'#' + c.idProg}">#1</td>
+                                        <td><span class="badge bg-info bg-opacity-10 text-primary border border-info" th:text="${c.esp}">Cardiología</span></td>
+                                        <td class="fw-semibold" th:text="${c.med}">Dr. Carlos Soto</td>
+                                        <td th:text="${c.fecAtencion}">2026-11-21</td>
+                                        <td th:text="${c.horaInicio + ' - ' + c.horaFin}">08:00 - 09:00</td>
+                                        <td th:text="${c.con}">C-101</td>
+                                        <td><span class="badge bg-success" th:text="${c.estAtencion}">PROGRAMADO</span></td>
+                                        <td>
+                                            <a th:href="@{/ver(idHor=${c.idProg})}" class="btn btn-sm btn-outline-primary">
+                                                <i class="fa-regular fa-clock me-1"></i> Ver Turnos
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(catalogo)}">
+                                        <td colspan="8" class="text-center text-muted py-4">
+                                            No hay programaciones registradas aún. Utilice el formulario izquierdo para crear la primera programación.
+                                        </td>
+                                    </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -226,10 +232,8 @@
             </div>
         </div>
 
-        <!-- ======================================================================= -->
-        <!-- PESTAÑA 2: ROL PACIENTE (FILTRO ESPECIALIDAD, INTERVALOS Y CESTA)       -->
-        <!-- ======================================================================= -->
-        <div class="tab-pane fade" th:classappend="${usuario.car == 'PACIENTE' ? 'show active' : ''}" id="pane-paciente" role="tabpanel">
+        <!-- PESTAÑA 2: ROL PACIENTE -->
+        <div class="tab-pane fade" th:if="${usuario.car == 'PACIENTE' or usuario.car == 'EMPLEADO'}" th:classappend="${usuario.car == 'PACIENTE' ? 'show active' : ''}" id="pane-paciente" role="tabpanel">
             <div class="row g-4">
                 <!-- Columna Izquierda: Buscador por Especialidad + Selección de Turnos -->
                 <div class="col-lg-8">
@@ -250,46 +254,45 @@
                             <div class="table-responsive">
                                 <table class="table table-sm table-hover align-middle mb-0">
                                     <thead class="table-light small">
-                                        <tr>
-                                            <th>Código</th>
-                                            <th>Especialidad</th>
-                                            <th>Médico</th>
-                                            <th>Fecha</th>
-                                            <th>Horario</th>
-                                            <th>Consultorio</th>
-                                            <th>Acción</th>
-                                        </tr>
+                                    <tr>
+                                        <th>ID (<code>idProg</code>)</th>
+                                        <th>Especialidad</th>
+                                        <th>Médico</th>
+                                        <th>Fecha</th>
+                                        <th>Horario</th>
+                                        <th>Consultorio</th>
+                                        <th>Acción</th>
+                                    </tr>
                                     </thead>
                                     <tbody>
-                                        <tr th:each="c : ${catalogo}" th:classappend="${codHorActual == c.codProg ? 'table-primary' : ''}">
-                                            <td class="fw-bold" th:text="${'#' + c.codProg}">#1</td>
-                                            <td th:text="${c.esp}">Especialidad</td>
-                                            <td th:text="${c.med}">Médico</td>
-                                            <td th:text="${c.fecAtencion}">Fecha</td>
-                                            <td th:text="${c.horaInicio + ' - ' + c.horaFin}">08:00 - 09:20</td>
-                                            <td th:text="${c.con}">C-101</td>
-                                            <td>
-                                                <a th:href="@{/ver(codHor=${c.codProg}, esp=${espFiltro})}" class="btn btn-sm btn-primary">
-                                                    Elegir Turno <i class="fa-solid fa-arrow-right ms-1"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
+                                    <tr th:each="c : ${catalogo}" th:classappend="${idHorActual == c.idProg ? 'table-primary' : ''}">
+                                        <td class="fw-bold" th:text="${'#' + c.idProg}">#1</td>
+                                        <td th:text="${c.esp}">Cardiología</td>
+                                        <td th:text="${c.med}">Dr. Carlos Soto</td>
+                                        <td th:text="${c.fecAtencion}">2026-11-21</td>
+                                        <td th:text="${c.horaInicio + ' - ' + c.horaFin}">08:00 - 09:00</td>
+                                        <td th:text="${c.con}">C-101</td>
+                                        <td>
+                                            <a th:href="@{/ver(idHor=${c.idProg}, esp=${espFiltro})}" class="btn btn-sm btn-primary">
+                                                Elegir Turno <i class="fa-solid fa-arrow-right ms-1"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Grilla de Intervalos Generados (MicroIntervalos <= 20 min) -->
+                    <!-- Grilla de Intervalos Generados (MicroIntervalos: 10, 15 o 20 min) -->
                     <div class="card card-clinical">
                         <div class="card-header-clinical d-flex justify-content-between align-items-center">
                             <div>
                                 <h6 class="mb-0 fw-bold text-dark">
-                                    <i class="fa-regular fa-calendar-check me-2 text-success"></i>Paso 2: Seleccionar Intervalo de Turno (`MicroIntervalos` &le; 20 min)
+                                    <i class="fa-regular fa-calendar-check me-2 text-success"></i>Paso 2: Seleccionar Intervalo de Turno (<code>MicroIntervalos</code> - 10, 15 o 20 min)
                                 </h6>
                                 <small class="text-muted" th:if="${progSeleccionada != null}"
-                                       th:text="${'Programación #' + progSeleccionada.codProg + ' | ' + progSeleccionada.med + ' (' + progSeleccionada.esp + ') - Consultorio ' + progSeleccionada.con}">
-                                </small>
+                                       th:text="${'Programación #' + progSeleccionada.idProg + ' | ' + progSeleccionada.med + ' (' + progSeleccionada.esp + ') - Consultorio ' + progSeleccionada.con}"></small>
                             </div>
                         </div>
                         <div class="card-body">
@@ -299,7 +302,7 @@
                                          th:classappend="${i.estLin == 'Disponible' ? 'bg-white' : 'bg-light opacity-75'}">
                                         <div>
                                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                                <span class="badge bg-secondary" th:text="${'Turno #' + i.codInt}">#1</span>
+                                                <span class="badge bg-secondary" th:text="${'Turno #' + i.idInt}">#1</span>
                                                 <span class="badge"
                                                       th:classappend="${i.estLin == 'Disponible' ? 'bg-success' : 'bg-danger'}"
                                                       th:text="${i.estLin}">Disponible</span>
@@ -307,12 +310,12 @@
                                             <h6 class="fw-bold text-dark mb-1">
                                                 <i class="fa-regular fa-clock text-primary me-1"></i><span th:text="${i.hora}">08:00 - 08:20</span>
                                             </h6>
-                                            <p class="small text-muted mb-3" th:text="${'Duración: ' + i.durMin + ' minutos'}">20 min</p>
+                                            <p class="small text-muted mb-3" th:text="${'Duración: ' + i.durMin + ' minutos'}">20 minutos</p>
                                         </div>
 
                                         <form th:if="${i.estLin == 'Disponible' and progSeleccionada != null}" th:action="@{/seleccionarIntervalo}" method="post">
-                                            <input type="hidden" name="codProg" th:value="${progSeleccionada.codProg}">
-                                            <input type="hidden" name="codInt" th:value="${i.codInt}">
+                                            <input type="hidden" name="idProg" th:value="${progSeleccionada.idProg}">
+                                            <input type="hidden" name="idInt" th:value="${i.idInt}">
                                             <input type="hidden" name="med" th:value="${progSeleccionada.med}">
                                             <input type="hidden" name="esp" th:value="${progSeleccionada.esp}">
                                             <input type="hidden" name="franja" th:value="${i.hora}">
@@ -329,53 +332,53 @@
                                 </div>
                             </div>
                             <div th:if="${intervalos == null or #lists.isEmpty(intervalos)}" class="text-center text-muted py-4">
-                                Seleccione una programación médica de la tabla superior para visualizar sus intervalos de 20 minutos.
+                                Seleccione una programación médica de la tabla superior para visualizar sus intervalos de 10, 15 o 20 minutos.
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Columna Derecha: Cesta Temporal (MicroCarrito) y Confirmación de Cita (MicroCompuesto) -->
+                <!-- Columna Derecha: Cesta Temporal (MicroCarrito) y Confirmación (MicroCompuesto) -->
                 <div class="col-lg-4">
                     <div class="card card-clinical sticky-top" style="top: 1.5rem;">
                         <div class="card-header-clinical bg-primary text-white">
                             <div class="d-flex justify-content-between align-items-center">
                                 <h6 class="mb-0 fw-bold">
-                                    <i class="fa-solid fa-notes-medical me-2"></i>Paso 3: Cesta de Reserva (`MicroCarrito`)
+                                    <i class="fa-solid fa-notes-medical me-2"></i>Paso 3: Cesta de Reserva (<code>MicroCarrito</code>)
                                 </h6>
-                                <span class="badge bg-warning text-dark" th:text="${totalMinutos + ' min totales'}">0 min</span>
+                                <span class="badge bg-warning text-dark" th:text="${totalMinutos + ' min totales'}">0 min totales</span>
                             </div>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive mb-3">
                                 <table class="table table-sm align-middle">
                                     <thead class="table-light small">
-                                        <tr>
-                                            <th>Médico / Esp.</th>
-                                            <th>Franja</th>
-                                            <th>Min</th>
-                                            <th></th>
-                                        </tr>
+                                    <tr>
+                                        <th>Médico / Esp.</th>
+                                        <th>Franja</th>
+                                        <th>Min</th>
+                                        <th></th>
+                                    </tr>
                                     </thead>
                                     <tbody>
-                                        <tr th:each="item : ${carrito}">
-                                            <td>
-                                                <div class="fw-semibold small" th:text="${item.med}">Dr. Soto</div>
-                                                <span class="badge bg-light text-secondary border" th:text="${item.esp}">Cardiología</span>
-                                            </td>
-                                            <td class="small fw-bold text-primary" th:text="${item.franja}">08:00 - 08:20</td>
-                                            <td class="small" th:text="${item.durMin + 'm'}">20m</td>
-                                            <td class="text-end">
-                                                <a th:href="@{/cesta/quitar/{id}(id=${item.codLin})}" class="text-danger" title="Quitar">
-                                                    <i class="fa-solid fa-trash-can"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                        <tr th:if="${#lists.isEmpty(carrito)}">
-                                            <td colspan="4" class="text-center text-muted small py-3">
-                                                No hay turnos seleccionados en la cesta temporal.
-                                            </td>
-                                        </tr>
+                                    <tr th:each="item : ${carrito}">
+                                        <td>
+                                            <div class="fw-semibold small" th:text="${item.med}">Dr. Carlos Soto</div>
+                                            <span class="badge bg-light text-secondary border" th:text="${item.esp}">Cardiología</span>
+                                        </td>
+                                        <td class="small fw-bold text-primary" th:text="${item.franja}">08:00 - 08:20</td>
+                                        <td class="small" th:text="${item.durMin + 'm'}">20m</td>
+                                        <td class="text-end">
+                                            <a th:href="@{/cesta/quitar/{idLin}(idLin=${item.idLin})}" class="text-danger" title="Quitar">
+                                                <i class="fa-solid fa-trash-can"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(carrito)}">
+                                        <td colspan="4" class="text-center text-muted small py-3">
+                                            No hay turnos seleccionados en la cesta temporal.
+                                        </td>
+                                    </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -388,24 +391,28 @@
 
                             <hr>
 
-                            <!-- Formulario Confirmar Cita Paciente -->
-                            <h6 class="fw-bold text-dark mb-2">Confirmar Cita (Estado "Pendiente")</h6>
+                            <!-- Formulario Confirmar Programación / Cita (DTO Entrada: idEmp, idProg, idInt, idHor, pas) -->
+                            <h6 class="fw-bold text-dark mb-2">Confirmar Programación (<code>DTO Entrada</code>)</h6>
                             <form th:action="@{/confirmarCitaPaciente}" method="post">
                                 <div class="mb-2">
-                                    <label class="form-label small fw-semibold">Código Paciente (`codPac`)</label>
-                                    <input type="number" name="codPac" class="form-control form-control-sm" th:value="${usuario.codEmp}" required>
+                                    <label class="form-label small fw-semibold">ID Empleado / Usuario (<code>idEmp</code>)</label>
+                                    <input type="number" name="idEmp" class="form-control form-control-sm" th:value="${usuario.idEmp}" required>
                                 </div>
                                 <div class="mb-2">
-                                    <label class="form-label small fw-semibold">Nombre del Paciente (`nomPac`)</label>
-                                    <input type="text" name="nomPac" class="form-control form-control-sm" th:value="${usuario.nom}" required>
+                                    <label class="form-label small fw-semibold">ID Programación (<code>idProg</code>)</label>
+                                    <input type="number" name="idProg" class="form-control form-control-sm" th:value="${idHorActual}">
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small fw-semibold">ID Intervalo (<code>idInt</code>)</label>
+                                    <input type="number" name="idInt" class="form-control form-control-sm"
+                                           th:value="${!#lists.isEmpty(carrito) ? carrito[0].idInt : ''}">
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label small fw-semibold">Fecha de Cita</label>
-                                    <input type="date" name="fecAsig" class="form-control form-control-sm"
-                                           th:value="${progSeleccionada != null ? progSeleccionada.fecAtencion : manana}" required>
+                                    <label class="form-label small fw-semibold">Contraseña de Confirmación (<code>pas</code>)</label>
+                                    <input type="password" name="pas" class="form-control form-control-sm" th:value="${usuario.pas}">
                                 </div>
                                 <button type="submit" class="btn btn-success w-100 py-2 fw-semibold">
-                                    <i class="fa-solid fa-calendar-check me-1"></i> Confirmar y Registrar Cita Médica
+                                    <i class="fa-solid fa-calendar-check me-1"></i> Confirmar y Ver DTO Salida
                                 </button>
                             </form>
                         </div>
@@ -414,64 +421,63 @@
             </div>
         </div>
 
-        <!-- ======================================================================= -->
-        <!-- PESTAÑA 3: ROL MÉDICO (AGENDA Y CITAS PENDIENTES POR MÉDICO)            -->
-        <!-- ======================================================================= -->
-        <div class="tab-pane fade" th:classappend="${usuario.car == 'MEDICO' ? 'show active' : ''}" id="pane-medico" role="tabpanel">
+        <!-- PESTAÑA 3: ROL MÉDICO (Solo visible para usuarios con rol MEDICO) -->
+        <div class="tab-pane fade" th:if="${usuario.car == 'MEDICO'}" th:classappend="${usuario.car == 'MEDICO' ? 'show active' : ''}" id="pane-medico" role="tabpanel">
             <div class="card card-clinical">
                 <div class="card-header-clinical d-flex flex-wrap justify-content-between align-items-center gap-3">
                     <div>
                         <h6 class="mb-0 fw-bold text-primary">
-                            <i class="fa-solid fa-user-doctor me-2"></i>Agenda Médica: Citas Confirmadas en Estado "Pendiente" (`MicroHorario`)
+                            <i class="fa-solid fa-user-doctor me-2"></i>Agenda Médica: Mis Citas Pendientes (<code>MicroHorario</code>)
                         </h6>
-                        <small class="text-muted" th:text="${'Mostrando agenda para: ' + medicoConsultado}"></small>
+                        <small class="text-muted" th:text="${'Mostrando agenda para: ' + usuario.nom}"></small>
                     </div>
                     <form th:action="@{/verCitasPendientesMedico}" method="get" class="d-flex gap-2">
-                        <input type="text" name="nomMed" class="form-control form-control-sm" placeholder="Filtrar por nombre de médico...">
+                        <input type="text" name="nomMed" th:value="${usuario.nom}" class="form-control form-control-sm" placeholder="Filtrar por nombre de médico...">
                         <button type="submit" class="btn btn-sm btn-primary">Buscar Médico</button>
-                        <a th:href="@{/ver(nomMed='')}" class="btn btn-sm btn-outline-secondary">Ver Todas</a>
                     </form>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0">
                             <thead class="table-light small text-uppercase">
-                                <tr>
-                                    <th>Cód. Cita (`codHor`)</th>
-                                    <th>Paciente (`nomPaciente`)</th>
-                                    <th>Médico Asignado</th>
-                                    <th>Especialidad</th>
-                                    <th>Fecha Programada</th>
-                                    <th>Hora / Franja</th>
-                                    <th>Estado Cita</th>
-                                    <th>Comprobante</th>
-                                </tr>
+                            <tr>
+                                <th>ID (<code>idHor</code>)</th>
+                                <th>Paciente</th>
+                                <th>Médico Asignado</th>
+                                <th>Especialidad</th>
+                                <th>Fecha Programada</th>
+                                <th>Hora / Franja</th>
+                                <th>Duración</th>
+                                <th>Estado</th>
+                                <th>Comprobante</th>
+                            </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="cita : ${citasMedico}">
-                                    <td class="fw-bold text-primary" th:text="${'#' + cita.codHor}">#1</td>
-                                    <td class="fw-semibold" th:text="${cita.nomPaciente}">Juan Pérez</td>
-                                    <td th:text="${cita.med}">Dr. Carlos Soto</td>
-                                    <td><span class="badge bg-info bg-opacity-10 text-primary border border-info" th:text="${cita.esp}">Cardiología</span></td>
-                                    <td th:text="${cita.fecAsig}">2026-11-14</td>
-                                    <td class="fw-bold" th:text="${cita.horaCita}">08:00 - 08:20</td>
-                                    <td>
-                                        <span class="badge bg-warning text-dark" th:text="${cita.est}">Pendiente</span>
-                                    </td>
-                                    <td>
-                                        <form th:action="@{/buscarHorario}" method="post" class="d-inline">
-                                            <input type="hidden" name="codHor" th:value="${cita.codHor}">
-                                            <button type="submit" class="btn btn-sm btn-outline-primary">
-                                                <i class="fa-solid fa-file-medical me-1"></i> Ver Detalle
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                                <tr th:if="${#lists.isEmpty(citasMedico)}">
-                                    <td colspan="8" class="text-center text-muted py-4">
-                                        No se encontraron citas médicas registradas para el criterio seleccionado.
-                                    </td>
-                                </tr>
+                            <tr th:each="cita : ${citasMedico}">
+                                <td class="fw-bold text-primary" th:text="${'#' + cita.idHor}">#1</td>
+                                <td class="fw-semibold" th:text="${cita.nomPaciente}">Juan Pérez</td>
+                                <td th:text="${cita.med}">Dr. Carlos Soto</td>
+                                <td><span class="badge bg-info bg-opacity-10 text-primary border border-info" th:text="${cita.esp}">Cardiología</span></td>
+                                <td th:text="${cita.fecAsig}">2026-11-21</td>
+                                <td class="fw-bold" th:text="${cita.horaCita}">08:00 - 08:10</td>
+                                <td th:text="${cita.duracionMinutos + ' min'}">10 min</td>
+                                <td>
+                                    <span class="badge bg-warning text-dark" th:text="${cita.est}">Programado</span>
+                                </td>
+                                <td>
+                                    <form th:action="@{/buscarHorario}" method="post" class="d-inline">
+                                        <input type="hidden" name="idHor" th:value="${cita.idHor}">
+                                        <button type="submit" class="btn btn-sm btn-outline-primary">
+                                            <i class="fa-solid fa-file-medical me-1"></i> Ver Detalle
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(citasMedico)}">
+                                <td colspan="9" class="text-center text-muted py-4">
+                                    No tiene citas médicas pendientes registradas en su agenda.
+                                </td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
@@ -481,7 +487,6 @@
 
     </div>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

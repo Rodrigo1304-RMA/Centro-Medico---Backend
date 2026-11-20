@@ -10,7 +10,7 @@ public class ProgramacionHorario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long codProg;
+    private Long idProg;
     private String esp;
     private String med;
     private String fecAtencion;
@@ -22,8 +22,8 @@ public class ProgramacionHorario {
     public ProgramacionHorario() {
     }
 
-    public ProgramacionHorario(Long codProg, String esp, String med, String fecAtencion, String horaInicio, String horaFin, String con, String estAtencion) {
-        this.codProg = codProg;
+    public ProgramacionHorario(Long idProg, String esp, String med, String fecAtencion, String horaInicio, String horaFin, String con, String estAtencion) {
+        this.idProg = idProg;
         this.esp = esp;
         this.med = med;
         this.fecAtencion = fecAtencion;
@@ -33,12 +33,12 @@ public class ProgramacionHorario {
         this.estAtencion = estAtencion;
     }
 
-    public Long getCodProg() {
-        return codProg;
+    public Long getIdProg() {
+        return idProg;
     }
 
-    public void setCodProg(Long codProg) {
-        this.codProg = codProg;
+    public void setIdProg(Long idProg) {
+        this.idProg = idProg;
     }
 
     public String getEsp() {

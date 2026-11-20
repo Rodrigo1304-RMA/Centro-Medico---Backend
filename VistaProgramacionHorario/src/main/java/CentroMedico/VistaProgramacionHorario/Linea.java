@@ -2,9 +2,9 @@ package CentroMedico.VistaProgramacionHorario;
 
 public class Linea {
 
-    private Long codLin;
-    private Long codProg;
-    private Long codInt;
+    private Long idLin;
+    private Long idProg;
+    private Long idInt;
     private String med;
     private String esp;
     private String franja;
@@ -16,10 +16,10 @@ public class Linea {
         this.durMin = 20;
     }
 
-    public Linea(Long codLin, Long codProg, Long codInt, String med, String esp, String franja, Integer durMin, Integer can) {
-        this.codLin = codLin;
-        this.codProg = codProg;
-        this.codInt = codInt;
+    public Linea(Long idLin, Long idProg, Long idInt, String med, String esp, String franja, Integer durMin, Integer can) {
+        this.idLin = idLin;
+        this.idProg = idProg;
+        this.idInt = idInt;
         this.med = med;
         this.esp = esp;
         this.franja = franja;
@@ -33,67 +33,67 @@ public class Linea {
         return d * c;
     }
 
-    public Long getCodLin() {
-        return codLin;
+    public Long getIdLin() { 
+        return idLin; 
+    }
+    
+    public void setIdLin(Long idLin) { 
+        this.idLin = idLin; 
     }
 
-    public void setCodLin(Long codLin) {
-        this.codLin = codLin;
+    public Long getIdProg() { 
+        return idProg; 
+    }
+    
+    public void setIdProg(Long idProg) { 
+        this.idProg = idProg;
     }
 
-    public Long getCodProg() {
-        return codProg;
+    public Long getIdInt() { 
+        return idInt; 
     }
-
-    public void setCodProg(Long codProg) {
-        this.codProg = codProg;
-    }
-
-    public Long getCodInt() {
-        return codInt;
-    }
-
-    public void setCodInt(Long codInt) {
-        this.codInt = codInt;
+    
+    public void setIdInt(Long idInt) { 
+        this.idInt = idInt;
     }
 
     public String getMed() {
         return med;
     }
-
-    public void setMed(String med) {
-        this.med = med;
+    
+    public void setMed(String med) { 
+        this.med = med; 
     }
 
-    public String getEsp() {
-        return esp;
+    public String getEsp() { 
+        return esp; 
     }
-
-    public void setEsp(String esp) {
+    
+    public void setEsp(String esp) { 
         this.esp = esp;
     }
 
-    public String getFranja() {
-        return franja;
+    public String getFranja() { 
+        return franja; 
     }
-
+    
     public void setFranja(String franja) {
         this.franja = franja;
     }
 
-    public Integer getDurMin() {
-        return durMin;
+    public Integer getDurMin() { 
+        return durMin; 
     }
-
+    
     public void setDurMin(Integer durMin) {
         this.durMin = durMin;
     }
 
     public Integer getCan() {
-        return can;
+        return can; 
     }
-
-    public void setCan(Integer can) {
+    
+    public void setCan(Integer can) { 
         this.can = can;
     }
 }

@@ -2,9 +2,9 @@ package CentroMedico.MicroCompuesto;
 
 public class Linea {
 
-    private Long codLin;
-    private Long codProg;
-    private Long codInt;
+    private Long idLin;
+    private Long idProg;
+    private Long idInt;
     private String med;
     private String esp;
     private String franja;
@@ -14,10 +14,10 @@ public class Linea {
     public Linea() {
     }
 
-    public Linea(Long codLin, Long codProg, Long codInt, String med, String esp, String franja, int durMin, int can) {
-        this.codLin = codLin;
-        this.codProg = codProg;
-        this.codInt = codInt;
+    public Linea(Long idLin, Long idProg, Long idInt, String med, String esp, String franja, int durMin, int can) {
+        this.idLin = idLin;
+        this.idProg = idProg;
+        this.idInt = idInt;
         this.med = med;
         this.esp = esp;
         this.franja = franja;
@@ -25,67 +25,71 @@ public class Linea {
         this.can = can;
     }
 
-    public Long getCodLin() {
-        return codLin;
+    public int getSubTotalMin() {
+        return durMin * (can > 0 ? can : 1);
     }
 
-    public void setCodLin(Long codLin) {
-        this.codLin = codLin;
+    public Long getIdLin() { 
+        return idLin; 
+    }
+    
+    public void setIdLin(Long idLin) { 
+        this.idLin = idLin; 
     }
 
-    public Long getCodProg() {
-        return codProg;
+    public Long getIdProg() { 
+        return idProg; 
+    }
+    
+    public void setIdProg(Long idProg) { 
+        this.idProg = idProg;
     }
 
-    public void setCodProg(Long codProg) {
-        this.codProg = codProg;
+    public Long getIdInt() { 
+        return idInt;
     }
-
-    public Long getCodInt() {
-        return codInt;
-    }
-
-    public void setCodInt(Long codInt) {
-        this.codInt = codInt;
+    
+    public void setIdInt(Long idInt) { 
+        this.idInt = idInt; 
     }
 
     public String getMed() {
-        return med;
+        return med; 
     }
-
-    public void setMed(String med) {
+    
+    public void setMed(String med) { 
         this.med = med;
     }
 
-    public String getEsp() {
+    public String getEsp() { 
         return esp;
     }
-
+    
     public void setEsp(String esp) {
-        this.esp = esp;
+        this.esp = esp; 
     }
 
-    public String getFranja() {
-        return franja;
+    public String getFranja() { 
+        return franja; 
+    }
+    
+    public void setFranja(String franja) { 
+        this.franja = franja; 
     }
 
-    public void setFranja(String franja) {
-        this.franja = franja;
-    }
-
-    public int getDurMin() {
+    public int getDurMin() { 
         return durMin;
     }
-
+    
     public void setDurMin(int durMin) {
-        this.durMin = durMin;
+        this.durMin = durMin; 
     }
 
-    public int getCan() {
-        return can;
+    public int getCan() { 
+        return can; 
     }
-
-    public void setCan(int can) {
+    
+    public void setCan(int can) { 
         this.can = can;
     }
 }

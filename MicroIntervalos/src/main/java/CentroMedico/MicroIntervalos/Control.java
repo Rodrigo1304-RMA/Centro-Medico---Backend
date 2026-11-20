@@ -16,41 +16,41 @@ public class Control {
     private Servicio s;
 
     @PostMapping("/generar")
-    public List<IntervaloTurno> generarIntervalos20Min(
-            @RequestParam Long codHor,
+    public List<IntervaloTurno> generarIntervalos(
+            @RequestParam Long idHor,
             @RequestParam(value = "hIni", defaultValue = "08:00") String hIni,
             @RequestParam(value = "hFin", defaultValue = "09:20") String hFin,
             @RequestParam(value = "dur", defaultValue = "20") int dur) {
-        return s.generarIntervalos20Min(codHor, hIni, hFin, dur);
+        return s.generarIntervalos(idHor, hIni, hFin, dur);
     }
 
-    @PostMapping("/generar/{codHor}")
+    @PostMapping("/generar/{idHor}")
     public List<IntervaloTurno> generarPorRuta(
-            @PathVariable Long codHor,
+            @PathVariable Long idHor,
             @RequestParam(value = "hIni", defaultValue = "08:00") String hIni,
             @RequestParam(value = "hFin", defaultValue = "09:20") String hFin,
             @RequestParam(value = "duracion", defaultValue = "20") int duracion) {
-        return s.generarIntervalos20Min(codHor, hIni, hFin, duracion);
+        return s.generarIntervalos(idHor, hIni, hFin, duracion);
     }
 
     @PostMapping("/registrar-franja")
     public IntervaloTurno registrarFranja(
-            @RequestParam Long codHor,
+            @RequestParam Long idHor,
             @RequestParam String hora,
             @RequestParam int duracion) {
-        return s.registrarFranja(codHor, hora, duracion);
+        return s.registrarFranja(idHor, hora, duracion);
     }
 
-    @PutMapping("/actualizar-estado/{codInt}")
+    @PutMapping("/actualizar-estado/{idInt}")
     public IntervaloTurno actualizarEstadoIntervalo(
-            @PathVariable Long codInt,
+            @PathVariable Long idInt,
             @RequestParam String nuevoEst) {
-        return s.actualizarEstadoIntervalo(codInt, nuevoEst);
+        return s.actualizarEstadoIntervalo(idInt, nuevoEst);
     }
 
-    @GetMapping("/listar/{codHor}")
-    public List<IntervaloTurno> listarPorHorario(@PathVariable Long codHor) {
-        return s.listarPorHorario(codHor);
+    @GetMapping("/listar/{idHor}")
+    public List<IntervaloTurno> listarPorHorario(@PathVariable Long idHor) {
+        return s.listarPorHorario(idHor);
     }
 
     @GetMapping("/listar")

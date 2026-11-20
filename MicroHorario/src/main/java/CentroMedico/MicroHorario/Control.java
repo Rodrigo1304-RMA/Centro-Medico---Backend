@@ -21,9 +21,9 @@ public class Control {
         return s.grabar(h);
     }
 
-    @PutMapping("/confirmar/{codHor}")
-    public Horario confirmarEstadoPendiente(@PathVariable Long codHor, @RequestParam String nomPac) {
-        return s.confirmarEstadoPendiente(codHor, nomPac);
+    @PutMapping("/confirmar/{idHor}")
+    public Horario confirmarEstadoPendiente(@PathVariable Long idHor, @RequestParam String nomPac) {
+        return s.confirmarEstadoPendiente(idHor, nomPac);
     }
 
     @GetMapping("/pendientes/{med}")
@@ -31,9 +31,9 @@ public class Control {
         return s.listarPendientesPorMedico(med);
     }
 
-    @GetMapping("/buscar/{codHor}")
-    public Horario buscar(@PathVariable Long codHor) {
-        return s.buscar(codHor);
+    @GetMapping("/buscar/{idHor}")
+    public Horario buscar(@PathVariable Long idHor) {
+        return s.buscar(idHor);
     }
 
     @GetMapping("/listar")

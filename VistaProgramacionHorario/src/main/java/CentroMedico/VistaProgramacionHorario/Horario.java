@@ -2,90 +2,100 @@ package CentroMedico.VistaProgramacionHorario;
 
 public class Horario {
 
-    private Long codHor;
-    private String fecAsig;
-    private String horaCita;
-    private String esp;
-    private String med;
+    private Long idHor;
+    private Long idEmp;
+    private String fecha;
+    private String hora;
+    private String medico;
+    private String especialidad;
+    private int duracionMinutos;
+    private String estado;
     private String nomPaciente;
-    private String est;
-    private Long codEmp;
 
     public Horario() {
     }
 
-    public Horario(Long codHor, String fecAsig, String horaCita, String esp, String med, String nomPaciente, String est, Long codEmp) {
-        this.codHor = codHor;
-        this.fecAsig = fecAsig;
-        this.horaCita = horaCita;
-        this.esp = esp;
-        this.med = med;
+    public Horario(Long idHor, Long idEmp, String fecha, String hora, String medico, String especialidad, int duracionMinutos, String estado, String nomPaciente) {
+        this.idHor = idHor;
+        this.idEmp = idEmp;
+        this.fecha = fecha;
+        this.hora = hora;
+        this.medico = medico;
+        this.especialidad = especialidad;
+        this.duracionMinutos = duracionMinutos;
+        this.estado = estado;
         this.nomPaciente = nomPaciente;
-        this.est = est;
-        this.codEmp = codEmp;
     }
 
-    public Long getCodHor() {
-        return codHor;
+    public Long getIdHor() {
+        return idHor; 
+    }
+    
+    public void setIdHor(Long idHor) { 
+        this.idHor = idHor;
     }
 
-    public void setCodHor(Long codHor) {
-        this.codHor = codHor;
+    public Long getIdEmp() { 
+        return idEmp;
+    }
+    
+    public void setIdEmp(Long idEmp) {
+        this.idEmp = idEmp;
     }
 
-    public String getFecAsig() {
-        return fecAsig;
+    public String getFecha() { 
+        return fecha;
+    }
+    
+    public void setFecha(String fecha) {
+        this.fecha = fecha; 
     }
 
-    public void setFecAsig(String fecAsig) {
-        this.fecAsig = fecAsig;
+    public String getHora() { 
+        return hora;
+    }
+    
+    public void setHora(String hora) { 
+        this.hora = hora; 
     }
 
-    public String getHoraCita() {
-        return horaCita;
+    public String getMedico() { 
+        return medico;
+    }
+    
+    public void setMedico(String medico) {
+        this.medico = medico;
     }
 
-    public void setHoraCita(String horaCita) {
-        this.horaCita = horaCita;
+    public String getEspecialidad() { 
+        return especialidad;
+    }
+    
+    public void setEspecialidad(String especialidad) {
+        this.especialidad = especialidad;
     }
 
-    public String getEsp() {
-        return esp;
+    public int getDuracionMinutos() {
+        return duracionMinutos;
+    }
+    
+    public void setDuracionMinutos(int duracionMinutos) {
+        this.duracionMinutos = duracionMinutos;
     }
 
-    public void setEsp(String esp) {
-        this.esp = esp;
+    public String getEstado() { 
+        return estado; 
     }
-
-    public String getMed() {
-        return med;
-    }
-
-    public void setMed(String med) {
-        this.med = med;
+    
+    public void setEstado(String estado) { 
+        this.estado = estado;
     }
 
     public String getNomPaciente() {
-        return nomPaciente;
+        return nomPaciente; 
     }
-
-    public void setNomPaciente(String nomPaciente) {
+    
+    public void setNomPaciente(String nomPaciente) { 
         this.nomPaciente = nomPaciente;
-    }
-
-    public String getEst() {
-        return est;
-    }
-
-    public void setEst(String est) {
-        this.est = est;
-    }
-
-    public Long getCodEmp() {
-        return codEmp;
-    }
-
-    public void setCodEmp(Long codEmp) {
-        this.codEmp = codEmp;
     }
 }

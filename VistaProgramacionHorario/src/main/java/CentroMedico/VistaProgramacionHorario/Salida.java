@@ -4,60 +4,90 @@ import java.util.List;
 
 public class Salida {
 
-    private Horario horario;
-    private ProgramacionHorario programacion;
+    private Long idHor;
+    private String fecha;
+    private String hora;
+    private String medico;
+    private String especialidad;
+    private int duracionMinutos;
+    private String estado;
     private List<Linea> franjas;
-    private int duracionTotalMin;
-    private String estadoCita;
 
     public Salida() {
     }
 
-    public Salida(Horario horario, ProgramacionHorario programacion, List<Linea> franjas, int duracionTotalMin, String estadoCita) {
-        this.horario = horario;
-        this.programacion = programacion;
+    public Salida(Long idHor, String fecha, String hora, String medico, String especialidad, int duracionMinutos, String estado, List<Linea> franjas) {
+        this.idHor = idHor;
+        this.fecha = fecha;
+        this.hora = hora;
+        this.medico = medico;
+        this.especialidad = especialidad;
+        this.duracionMinutos = duracionMinutos;
+        this.estado = estado;
         this.franjas = franjas;
-        this.duracionTotalMin = duracionTotalMin;
-        this.estadoCita = estadoCita;
     }
 
-    public Horario getHorario() {
-        return horario;
+    public Long getIdHor() { 
+        return idHor;
+    }
+    
+    public void setIdHor(Long idHor) {
+        this.idHor = idHor; 
     }
 
-    public void setHorario(Horario horario) {
-        this.horario = horario;
+    public String getFecha() { 
+        return fecha; 
+    }
+    
+    public void setFecha(String fecha) {
+        this.fecha = fecha;
     }
 
-    public ProgramacionHorario getProgramacion() {
-        return programacion;
+    public String getHora() {
+        return hora;
+    }
+    
+    public void setHora(String hora) {
+        this.hora = hora; 
     }
 
-    public void setProgramacion(ProgramacionHorario programacion) {
-        this.programacion = programacion;
+    public String getMedico() {
+        return medico; 
+    }
+    
+    public void setMedico(String medico) { 
+        this.medico = medico;
+    }
+
+    public String getEspecialidad() { 
+        return especialidad; 
+    }
+    
+    public void setEspecialidad(String especialidad) { 
+        this.especialidad = especialidad;
+    }
+
+    public int getDuracionMinutos() { 
+        return duracionMinutos;
+    }
+    
+    public void setDuracionMinutos(int duracionMinutos) {
+        this.duracionMinutos = duracionMinutos;
+    }
+
+    public String getEstado() { 
+        return estado;
+    }
+    
+    public void setEstado(String estado) { 
+        this.estado = estado;
     }
 
     public List<Linea> getFranjas() {
-        return franjas;
+        return franjas; 
     }
-
-    public void setFranjas(List<Linea> franjas) {
+    
+    public void setFranjas(List<Linea> franjas) { 
         this.franjas = franjas;
-    }
-
-    public int getDuracionTotalMin() {
-        return duracionTotalMin;
-    }
-
-    public void setDuracionTotalMin(int duracionTotalMin) {
-        this.duracionTotalMin = duracionTotalMin;
-    }
-
-    public String getEstadoCita() {
-        return estadoCita;
-    }
-
-    public void setEstadoCita(String estadoCita) {
-        this.estadoCita = estadoCita;
     }
 }

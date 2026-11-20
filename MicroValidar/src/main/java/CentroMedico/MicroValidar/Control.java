@@ -20,10 +20,15 @@ public class Control {
     }
 
     @PostMapping("/grabar")
-    public void grabar(@RequestBody Empleado emp) {
-        s.grabar(emp);
+    public Empleado grabar(@RequestBody Empleado emp) {
+        return s.grabar(emp);
     }
-    
+
+    @GetMapping("/buscar/{idEmp}")
+    public Empleado buscar(@PathVariable Long idEmp) {
+        return s.buscar(idEmp);
+    }
+
     @GetMapping("/listarPorRol/{car}")
     public List<Empleado> listarPorRol(@PathVariable String car) {
         return s.listarPorRol(car);

@@ -27,11 +27,11 @@ public class Control {
         return s.grabarDiaSiguiente(p);
     }
 
-    @GetMapping("/buscar/{codProg}")
-    public ProgramacionHorario buscar(@PathVariable Long codProg) {
-        return s.buscar(codProg);
+    @GetMapping("/buscar/{idProg}")
+    public ProgramacionHorario buscar(@PathVariable Long idProg) {
+        return s.buscar(idProg);
     }
-    
+
     @GetMapping("/filtrar")
     public List<ProgramacionHorario> listarPorEspecialidadYFecha(
             @RequestParam(value = "esp", required = false, defaultValue = "") String esp,
@@ -39,13 +39,13 @@ public class Control {
         return s.listarPorEspecialidadYFecha(esp, fecManana);
     }
 
-    @DeleteMapping("/eliminar/{codProg}")
-    public void eliminar(@PathVariable Long codProg) {
-        s.eliminar(codProg);
+    @DeleteMapping("/eliminar/{idProg}")
+    public void eliminar(@PathVariable Long idProg) {
+        s.eliminar(idProg);
     }
 
-    @PutMapping("/actualizar/{codProg}")
-    public ProgramacionHorario actualizar(@PathVariable Long codProg, @RequestBody ProgramacionHorario p) {
-        return s.actualizar(codProg, p);
+    @PutMapping("/actualizar/{idProg}")
+    public ProgramacionHorario actualizar(@PathVariable Long idProg, @RequestBody ProgramacionHorario p) {
+        return s.actualizar(idProg, p);
     }
 }

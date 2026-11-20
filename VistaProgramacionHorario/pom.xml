@@ -29,6 +29,7 @@
 	<properties>
 		<java.version>21</java.version>
 		<maven.test.skip>true</maven.test.skip>
+		<start-class>CentroMedico.VistaProgramacionHorario.VistaProgramacionHorarioApplication</start-class>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -62,6 +63,9 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<mainClass>CentroMedico.VistaProgramacionHorario.VistaProgramacionHorarioApplication</mainClass>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

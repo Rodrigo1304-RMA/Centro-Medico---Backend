@@ -16,6 +16,14 @@
             border-radius: 16px;
             box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
         }
+        .json-box {
+            background-color: #0f172a;
+            color: #e2e8f0;
+            border-radius: 12px;
+            padding: 1rem;
+            font-size: 0.85rem;
+            overflow-x: auto;
+        }
     </style>
 </head>
 <body>
@@ -23,57 +31,120 @@
     <div class="row justify-content-center">
         <div class="col-lg-8">
 
-            <!-- Alerta cuando no existe el código buscado -->
+            <!-- Alerta cuando no existe el ID buscado -->
             <div th:if="${msg != null}" class="alert alert-warning shadow-sm border-0 p-4 mb-4">
                 <h5 class="fw-bold mb-1"><i class="fa-solid fa-circle-exclamation me-2"></i>Aviso de Consulta</h5>
                 <p class="mb-0" th:text="${msg}"></p>
+            </div>
+
+            <!-- Salida Compuesta (8 atributos de DTO Salida) -->
+            <div th:if="${salida != null}" class="card voucher-card mb-4">
+                <div class="card-header bg-primary text-white p-4 rounded-top-4 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-1 fw-bold"><i class="fa-solid fa-file-waveform me-2"></i>Salida Consolidada (<code>DTO Salida</code>)</h5>
+                        <small class="text-white-50">Orquestado por <code>MicroCompuesto</code> (Puerto 8086)</small>
+                    </div>
+                    <span class="badge bg-warning text-dark fs-6" th:text="${salida.estado}">PROGRAMADO</span>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-3 mb-4">
+                        <div class="col-sm-6">
+                            <div class="p-3 bg-light rounded-3">
+                                <small class="text-muted d-block">ID Horario (<code>idHor</code>)</small>
+                                <span class="fs-5 fw-bold text-primary" th:text="${'#' + salida.idHor}">#1</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="p-3 bg-light rounded-3">
+                                <small class="text-muted d-block">Duración Total (<code>duracionMinutos</code>)</small>
+                                <span class="fs-6 fw-bold text-dark" th:text="${salida.duracionMinutos + ' minutos'}">20 minutos</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="p-3 bg-light rounded-3">
+                                <small class="text-muted d-block">Médico (<code>medico</code>)</small>
+                                <span class="fw-semibold" th:text="${salida.medico}">Dr. Carlos Soto</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="p-3 bg-light rounded-3">
+                                <small class="text-muted d-block">Especialidad (<code>especialidad</code>)</small>
+                                <span class="badge bg-info text-dark" th:text="${salida.especialidad}">Cardiología</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="p-3 bg-light rounded-3">
+                                <small class="text-muted d-block">Fecha (<code>fecha</code>)</small>
+                                <span class="fw-semibold" th:text="${salida.fecha}">2026-11-21</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="p-3 bg-light rounded-3">
+                                <small class="text-muted d-block">Hora (<code>hora</code>)</small>
+                                <span class="fw-bold text-success" th:text="${salida.hora}">08:00 - 08:20</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h6 class="fw-bold text-dark mb-2">JSON Compuesto (8 atributos de <code>DTO Salida</code>)</h6>
+                    <pre class="json-box mb-0"><code th:inline="text">{
+                      "idHor": [[${salida.idHor != null ? salida.idHor : 'null'}]],
+                      "fecha": "[[${salida.fecha != null ? salida.fecha : ''}]]",
+                      "hora": "[[${salida.hora != null ? salida.hora : ''}]]",
+                      "medico": "[[${salida.medico != null ? salida.medico : ''}]]",
+                      "especialidad": "[[${salida.especialidad != null ? salida.especialidad : ''}]]",
+                      "duracionMinutos": [[${salida.duracionMinutos}]],
+                      "estado": "[[${salida.estado != null ? salida.estado : ''}]]",
+                      "franjas": [[${salida.franjas != null ? #lists.size(salida.franjas) : 0}]] elemento(s) consolidado(s)
+                    }</code></pre>
+                </div>
             </div>
 
             <!-- Comprobante de Cita Médica Registrada en MicroHorario -->
             <div th:if="${horarioEncontrado != null}" class="card voucher-card mb-4">
                 <div class="card-header bg-primary text-white p-4 rounded-top-4 d-flex justify-content-between align-items-center">
                     <div>
-                        <h5 class="mb-1 fw-bold"><i class="fa-solid fa-file-Waveform me-2"></i>Comprobante Oficial de Cita Médica</h5>
-                        <small class="text-white-50">Consolidado mediante `MicroCompuesto` y persistido en `MicroHorario`</small>
+                        <h5 class="mb-1 fw-bold"><i class="fa-solid fa-file-waveform me-2"></i>Comprobante Oficial de Cita / Horario</h5>
+                        <small class="text-white-50">Consolidado mediante <code>MicroCompuesto</code> y persistido en <code>MicroHorario</code></small>
                     </div>
-                    <span class="badge bg-warning text-dark fs-6" th:text="${horarioEncontrado.est}">Pendiente</span>
+                    <span class="badge bg-warning text-dark fs-6" th:text="${horarioEncontrado.est}">Programado</span>
                 </div>
                 <div class="card-body p-4">
                     <div class="row g-3">
                         <div class="col-sm-6">
                             <div class="p-3 bg-light rounded-3">
-                                <small class="text-muted d-block">Código de Cita (`codHor`)</small>
-                                <span class="fs-5 fw-bold text-primary" th:text="${'#' + horarioEncontrado.codHor}">#1</span>
+                                <small class="text-muted d-block">ID de Horario (<code>idHor</code>)</small>
+                                <span class="fs-5 fw-bold text-primary" th:text="${'#' + horarioEncontrado.idHor}">#1</span>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="p-3 bg-light rounded-3">
-                                <small class="text-muted d-block">Paciente Titular (`nomPaciente`)</small>
-                                <span class="fs-6 fw-bold text-dark" th:text="${horarioEncontrado.nomPaciente}">Paciente</span>
+                                <small class="text-muted d-block">Paciente Titular (<code>nomPaciente</code>)</small>
+                                <span class="fs-6 fw-bold text-dark" th:text="${horarioEncontrado.nomPaciente}">Juan Pérez</span>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="p-3 bg-light rounded-3">
-                                <small class="text-muted d-block">Médico Especialista (`med`)</small>
-                                <span class="fw-semibold" th:text="${horarioEncontrado.med}">Dr. Soto</span>
+                                <small class="text-muted d-block">Médico Especialista (<code>med</code>)</small>
+                                <span class="fw-semibold text-dark" th:text="${horarioEncontrado.med}">Dr. Carlos Soto</span>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="p-3 bg-light rounded-3">
-                                <small class="text-muted d-block">Especialidad (`esp`)</small>
+                                <small class="text-muted d-block">Especialidad (<code>esp</code>)</small>
                                 <span class="badge bg-info text-dark" th:text="${horarioEncontrado.esp}">Cardiología</span>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="p-3 bg-light rounded-3">
-                                <small class="text-muted d-block">Fecha Asignada (`fecAsig`)</small>
-                                <span class="fw-semibold" th:text="${horarioEncontrado.fecAsig}">2026-11-14</span>
+                                <small class="text-muted d-block">Fecha Asignada (<code>fecAsig</code>)</small>
+                                <span class="fw-semibold text-dark" th:text="${horarioEncontrado.fecAsig}">2026-11-21</span>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="p-3 bg-light rounded-3">
-                                <small class="text-muted d-block">Franja Horaria Reservada (`horaCita`)</small>
-                                <span class="fw-bold text-success" th:text="${horarioEncontrado.horaCita}">08:00 - 08:20</span>
+                                <small class="text-muted d-block">Franja Horaria Reservada (<code>horaCita</code>)</small>
+                                <span class="fw-bold text-success" th:text="${horarioEncontrado.horaCita}">08:00 - 08:10</span>
                             </div>
                         </div>
                     </div>
@@ -84,31 +155,31 @@
             <div th:if="${turnos != null and !#lists.isEmpty(turnos)}" class="card voucher-card mb-4">
                 <div class="card-header bg-white p-3 border-bottom">
                     <h6 class="mb-0 fw-bold text-dark">
-                        <i class="fa-regular fa-clock me-2 text-primary"></i>Estado de los Intervalos de la Programación (`MicroIntervalos`)
+                        <i class="fa-regular fa-clock me-2 text-primary"></i>Estado de los Intervalos de la Programación (<code>MicroIntervalos</code>)
                     </h6>
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0">
                             <thead class="table-light small">
-                                <tr>
-                                    <th class="ps-4">N° Turno (`codInt`)</th>
-                                    <th>Hora / Franja</th>
-                                    <th>Duración</th>
-                                    <th>Estado Actual</th>
-                                </tr>
+                            <tr>
+                                <th class="ps-4">N° Turno (<code>idInt</code>)</th>
+                                <th>Hora / Franja</th>
+                                <th>Duración</th>
+                                <th>Estado Actual</th>
+                            </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="t : ${turnos}">
-                                    <td class="ps-4 fw-bold" th:text="${'#' + t.codInt}">#1</td>
-                                    <td th:text="${t.hora}">08:00 - 08:20</td>
-                                    <td th:text="${t.durMin + ' min'}">20 min</td>
-                                    <td>
-                                        <span class="badge"
-                                              th:classappend="${t.estLin == 'Disponible' ? 'bg-success' : 'bg-danger'}"
-                                              th:text="${t.estLin}">Reservado</span>
-                                    </td>
-                                </tr>
+                            <tr th:each="t : ${turnos}">
+                                <td class="ps-4 fw-bold" th:text="${'#' + t.idInt}">#1</td>
+                                <td th:text="${t.hora}">08:00 - 08:10</td>
+                                <td th:text="${t.durMin + ' min'}">10 min</td>
+                                <td>
+                                    <span class="badge"
+                                          th:classappend="${t.estLin == 'Disponible' ? 'bg-success' : 'bg-danger'}"
+                                          th:text="${t.estLin}">Reservado</span>
+                                </td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
@@ -127,5 +198,6 @@
         </div>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -10,22 +10,22 @@ public class Linea {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long codLin;
-    private Long codProg;
-    private Long codInt;
+    private Long idLin;
+    private Long idProg;
+    private Long idInt;
     private String med;
     private String esp;
     private String franja;
     private int durMin;
-    private int can;   
+    private int can;
 
     public Linea() {
     }
 
-    public Linea(Long codLin, Long codProg, Long codInt, String med, String esp, String franja, int durMin, int can) {
-        this.codLin = codLin;
-        this.codProg = codProg;
-        this.codInt = codInt;
+    public Linea(Long idLin, Long idProg, Long idInt, String med, String esp, String franja, int durMin, int can) {
+        this.idLin = idLin;
+        this.idProg = idProg;
+        this.idInt = idInt;
         this.med = med;
         this.esp = esp;
         this.franja = franja;
@@ -41,28 +41,28 @@ public class Linea {
         return getSubTotalMin();
     }
 
-    public Long getCodLin() {
-        return codLin;
+    public Long getIdLin() {
+        return idLin;
     }
 
-    public void setCodLin(Long codLin) {
-        this.codLin = codLin;
+    public void setIdLin(Long idLin) {
+        this.idLin = idLin;
     }
 
-    public Long getCodProg() {
-        return codProg;
+    public Long getIdProg() {
+        return idProg;
     }
 
-    public void setCodProg(Long codProg) {
-        this.codProg = codProg;
+    public void setIdProg(Long idProg) {
+        this.idProg = idProg;
     }
 
-    public Long getCodInt() {
-        return codInt;
+    public Long getIdInt() {
+        return idInt;
     }
 
-    public void setCodInt(Long codInt) {
-        this.codInt = codInt;
+    public void setIdInt(Long idInt) {
+        this.idInt = idInt;
     }
 
     public String getMed() {

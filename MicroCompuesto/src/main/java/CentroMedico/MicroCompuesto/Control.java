@@ -18,7 +18,7 @@ public class Control {
     @Autowired
     private Servicio s;
 
-    // 1. Usuarios y Sesiones (MicroValidar)
+    // 1. Usuarios y Sesiones (MicroValidar - 8082)
     @PostMapping("/usuarios/registrar")
     public Empleado registrarUsuario(@RequestBody Empleado e) {
         return s.registrarUsuario(e);
@@ -27,6 +27,11 @@ public class Control {
     @PostMapping("/usuarios/validar")
     public Empleado validarSesion(@RequestBody Entrada e) {
         return s.validarSesion(e);
+    }
+
+    @GetMapping("/usuarios/buscar/{idEmp}")
+    public Empleado buscarEmpleado(@PathVariable Long idEmp) {
+        return s.buscarEmpleado(idEmp);
     }
 
     @GetMapping("/usuarios/rol/{car}")
@@ -39,10 +44,12 @@ public class Control {
         return s.listarUsuarios();
     }
 
-    // 2. Programación de Catálogo e Intervalos (MicroCatalogo + MicroIntervalos)
+    // 2. Programación de Catálogo e Intervalos (MicroCatalogo - 8081 + MicroIntervalos - 8083)
     @PostMapping("/programacion/registrar")
-    public ProgramacionHorario registrarProgramacionDiaSiguiente(@RequestBody ProgramacionHorario p) {
-        return s.registrarProgramacionDiaSiguiente(p);
+    public ProgramacionHorario registrarProgramacionDiaSiguiente(
+            @RequestBody ProgramacionHorario p,
+            @RequestParam(value = "dur", defaultValue = "20") int dur) {
+        return s.registrarProgramacionDiaSiguiente(p, dur);
     }
 
     @GetMapping("/programacion/filtrar")
@@ -56,17 +63,17 @@ public class Control {
         return s.listarCatalogo();
     }
 
-    @GetMapping("/programacion/buscar/{codProg}")
-    public ProgramacionHorario buscarProgramacion(@PathVariable Long codProg) {
-        return s.buscarProgramacion(codProg);
+    @GetMapping("/programacion/buscar/{idProg}")
+    public ProgramacionHorario buscarProgramacion(@PathVariable Long idProg) {
+        return s.buscarProgramacion(idProg);
     }
 
-    @GetMapping("/intervalos/{codHor}")
-    public List<IntervaloTurno> listarIntervalos(@PathVariable Long codHor) {
-        return s.listarIntervalos(codHor);
+    @GetMapping("/intervalos/{idHor}")
+    public List<IntervaloTurno> listarIntervalos(@PathVariable Long idHor) {
+        return s.listarIntervalos(idHor);
     }
 
-    // 3. Cesta Temporal (MicroCarrito)
+    // 3. Cesta Temporal (MicroCarrito - 8084)
     @DeleteMapping("/cesta/nueva")
     public void nuevaCesta() {
         s.nuevaCesta();
@@ -77,9 +84,9 @@ public class Control {
         return s.agregarFranja(lin);
     }
 
-    @DeleteMapping("/cesta/quitar/{codLin}")
-    public void quitarFranja(@PathVariable Long codLin) {
-        s.quitarFranja(codLin);
+    @DeleteMapping("/cesta/quitar/{idLin}")
+    public void quitarFranja(@PathVariable Long idLin) {
+        s.quitarFranja(idLin);
     }
 
     @GetMapping("/cesta/ver")
@@ -92,10 +99,10 @@ public class Control {
         return s.obtenerTotalMinutosCesta();
     }
 
-    // 4. Confirmación de Citas y Agenda Médica (MicroHorario)
+    // 4. Confirmación y Salida Compuesta (MicroHorario - 8085)
     @PostMapping("/citas/confirmar")
-    public Salida confirmarCita(@RequestBody Entrada e) {
-        return s.confirmarCita(e);
+    public Salida confirmarProgramacion(@RequestBody Entrada e) {
+        return s.confirmarProgramacion(e);
     }
 
     @GetMapping("/citas/pendientes/{med}")
@@ -108,9 +115,9 @@ public class Control {
         return s.listarTodosHorarios();
     }
 
-    @GetMapping("/citas/buscar/{codHor}")
-    public Horario buscarHorario(@PathVariable Long codHor) {
-        return s.buscarHorario(codHor);
+    @GetMapping("/citas/buscar/{idHor}")
+    public Horario buscarHorario(@PathVariable Long idHor) {
+        return s.buscarHorario(idHor);
     }
 
     @PostMapping("/confirmar-horario")

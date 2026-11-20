@@ -2,7 +2,7 @@ package CentroMedico.MicroCompuesto;
 
 public class ProgramacionHorario {
 
-    private Long codProg;
+    private Long idProg;
     private String esp;
     private String med;
     private String fecAtencion;
@@ -14,8 +14,8 @@ public class ProgramacionHorario {
     public ProgramacionHorario() {
     }
 
-    public ProgramacionHorario(Long codProg, String esp, String med, String fecAtencion, String horaInicio, String horaFin, String con, String estAtencion) {
-        this.codProg = codProg;
+    public ProgramacionHorario(Long idProg, String esp, String med, String fecAtencion, String horaInicio, String horaFin, String con, String estAtencion) {
+        this.idProg = idProg;
         this.esp = esp;
         this.med = med;
         this.fecAtencion = fecAtencion;
@@ -25,67 +25,67 @@ public class ProgramacionHorario {
         this.estAtencion = estAtencion;
     }
 
-    public Long getCodProg() {
-        return codProg;
+    public Long getIdProg() {
+        return idProg; 
+    }
+    
+    public void setIdProg(Long idProg) {
+        this.idProg = idProg;
     }
 
-    public void setCodProg(Long codProg) {
-        this.codProg = codProg;
+    public String getEsp() { 
+        return esp; 
     }
-
-    public String getEsp() {
-        return esp;
-    }
-
-    public void setEsp(String esp) {
-        this.esp = esp;
+    
+    public void setEsp(String esp) { 
+        this.esp = esp; 
     }
 
     public String getMed() {
-        return med;
+        return med; 
+    }
+    
+    public void setMed(String med) { 
+        this.med = med; 
     }
 
-    public void setMed(String med) {
-        this.med = med;
-    }
-
-    public String getFecAtencion() {
+    public String getFecAtencion() { 
         return fecAtencion;
     }
-
+    
     public void setFecAtencion(String fecAtencion) {
         this.fecAtencion = fecAtencion;
     }
 
-    public String getHoraInicio() {
-        return horaInicio;
+    public String getHoraInicio() { 
+        return horaInicio; 
+    }
+    
+    public void setHoraInicio(String horaInicio) { 
+        this.horaInicio = horaInicio; 
     }
 
-    public void setHoraInicio(String horaInicio) {
-        this.horaInicio = horaInicio;
+    public String getHoraFin() { 
+        return horaFin; 
     }
-
-    public String getHoraFin() {
-        return horaFin;
-    }
-
-    public void setHoraFin(String horaFin) {
+    
+    public void setHoraFin(String horaFin) { 
         this.horaFin = horaFin;
     }
 
-    public String getCon() {
+    public String getCon() { 
         return con;
     }
-
-    public void setCon(String con) {
+    
+    public void setCon(String con) { 
         this.con = con;
     }
 
-    public String getEstAtencion() {
-        return estAtencion;
+    public String getEstAtencion() { 
+        return estAtencion; 
     }
-
-    public void setEstAtencion(String estAtencion) {
-        this.estAtencion = estAtencion;
+    
+    public void setEstAtencion(String estAtencion) { 
+        this.estAtencion = estAtencion; 
     }
 }

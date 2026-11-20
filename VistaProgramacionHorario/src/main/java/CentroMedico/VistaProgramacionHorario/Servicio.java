@@ -14,11 +14,14 @@ public class Servicio {
 
     private final String URL_COMPUESTO = "http://localhost:8086/compuesto";
 
-    // 1. Gestión de Sesiones y Usuarios (vía MicroCompuesto -> MicroValidar)
-    public Empleado validarSesion(Long codUsu, String pas) {
+    public boolean validarDuracionPermitida(int durMin) {
+        return durMin == 10 || durMin == 15 || durMin == 20;
+    }
+
+    public Empleado validarSesion(Long idEmp, String pas) {
         try {
             Entrada e = new Entrada();
-            e.setCodEmp(codUsu);
+            e.setIdEmp(idEmp);
             e.setPas(pas);
             return rt.postForObject(URL_COMPUESTO + "/usuarios/validar", e, Empleado.class);
         } catch (Exception ex) {
@@ -52,10 +55,10 @@ public class Servicio {
         }
     }
 
-    // 2. Programación de Catálogo e Intervalos (vía MicroCompuesto -> MicroCatalogo + MicroIntervalos)
-    public ProgramacionHorario registrarProgramacionDiaSiguiente(ProgramacionHorario p) {
+    public ProgramacionHorario registrarProgramacionDiaSiguiente(ProgramacionHorario p, int durMin) {
         try {
-            return rt.postForObject(URL_COMPUESTO + "/programacion/registrar", p, ProgramacionHorario.class);
+            int durValida = validarDuracionPermitida(durMin) ? durMin : 20;
+            return rt.postForObject(URL_COMPUESTO + "/programacion/registrar?dur=" + durValida, p, ProgramacionHorario.class);
         } catch (Exception ex) {
             return null;
         }
@@ -80,24 +83,23 @@ public class Servicio {
         }
     }
 
-    public ProgramacionHorario buscarProgramacion(Long codProg) {
+    public ProgramacionHorario buscarProgramacion(Long idProg) {
         try {
-            return rt.getForObject(URL_COMPUESTO + "/programacion/buscar/" + codProg, ProgramacionHorario.class);
+            return rt.getForObject(URL_COMPUESTO + "/programacion/buscar/" + idProg, ProgramacionHorario.class);
         } catch (Exception ex) {
             return null;
         }
     }
 
-    public List<IntervaloTurno> listarIntervalos(Long codHor) {
+    public List<IntervaloTurno> listarIntervalos(Long idHor) {
         try {
-            IntervaloTurno[] res = rt.getForObject(URL_COMPUESTO + "/intervalos/" + codHor, IntervaloTurno[].class);
+            IntervaloTurno[] res = rt.getForObject(URL_COMPUESTO + "/intervalos/" + idHor, IntervaloTurno[].class);
             return res != null ? Arrays.asList(res) : List.of();
         } catch (Exception ex) {
             return List.of();
         }
     }
 
-    // 3. Cesta Temporal de Turnos (vía MicroCompuesto -> MicroCarrito)
     public List<Linea> verCesta() {
         try {
             Linea[] res = rt.getForObject(URL_COMPUESTO + "/cesta/ver", Linea[].class);
@@ -107,17 +109,24 @@ public class Servicio {
         }
     }
 
-    public void agregarFranja(Linea lin) {
+    public boolean agregarFranja(Linea lin) {
         try {
+            int d = (lin.getDurMin() != null) ? lin.getDurMin() : 20;
+            if (!validarDuracionPermitida(d)) {
+                return false;
+            }
+            lin.setDurMin(d);
             rt.postForObject(URL_COMPUESTO + "/cesta/agregar", lin, Linea.class);
+            return true;
         } catch (Exception ex) {
             System.out.println("Error al agregar franja: " + ex.getMessage());
+            return false;
         }
     }
 
-    public void quitarFranja(Long codLin) {
+    public void quitarFranja(Long idLin) {
         try {
-            rt.delete(URL_COMPUESTO + "/cesta/quitar/" + codLin);
+            rt.delete(URL_COMPUESTO + "/cesta/quitar/" + idLin);
         } catch (Exception ex) {
             System.out.println("Error al quitar franja: " + ex.getMessage());
         }
@@ -140,7 +149,6 @@ public class Servicio {
         }
     }
 
-    // 4. Confirmación de Citas y Consultas Médicas (vía MicroCompuesto -> MicroHorario)
     public Salida confirmarCita(Entrada e) {
         try {
             return rt.postForObject(URL_COMPUESTO + "/citas/confirmar", e, Salida.class);
@@ -167,9 +175,9 @@ public class Servicio {
         }
     }
 
-    public Horario buscarHorario(Long codHor) {
+    public Horario buscarHorario(Long idHor) {
         try {
-            return rt.getForObject(URL_COMPUESTO + "/citas/buscar/" + codHor, Horario.class);
+            return rt.getForObject(URL_COMPUESTO + "/citas/buscar/" + idHor, Horario.class);
         } catch (Exception ex) {
             return null;
         }

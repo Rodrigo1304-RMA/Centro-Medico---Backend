@@ -1,5 +1,6 @@
 package CentroMedico.MicroCompuesto;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,19 @@ public class Servicio {
     private final String URL_CARRITO = "http://localhost:8084/cesta";
     private final String URL_HORARIO = "http://localhost:8085";
 
+    public boolean validarDuracionPermitida(int durMin) {
+        return durMin == 10 || durMin == 15 || durMin == 20;
+    }
+
+    private int validarDuracion(int durMin) {
+        if (!validarDuracionPermitida(durMin)) {
+            throw new IllegalArgumentException(
+                    "Duración no permitida (" + durMin + " min). En el centro médico solo se aceptan intervalos de 10, 15 o máximo 20 minutos."
+            );
+        }
+        return durMin;
+    }
+
     // 1. MicroValidar (8082)
     public Empleado registrarUsuario(Empleado e) {
         return rest.postForObject(URL_VALIDAR + "/grabar", e, Empleado.class);
@@ -25,6 +39,13 @@ public class Servicio {
 
     public Empleado validarSesion(Entrada e) {
         return rest.postForObject(URL_VALIDAR + "/validar", e, Empleado.class);
+    }
+
+    public Empleado buscarEmpleado(Long idEmp) {
+        if (idEmp == null) {
+            return null;
+        }
+        return rest.getForObject(URL_VALIDAR + "/buscar/" + idEmp, Empleado.class);
     }
 
     public List<Empleado> listarUsuariosPorRol(String car) {
@@ -37,13 +58,15 @@ public class Servicio {
         return Arrays.asList(arr != null ? arr : new Empleado[0]);
     }
 
-    // 2. MicroCatalogo (8081) + Generación automática en MicroIntervalos (8083)
-    public ProgramacionHorario registrarProgramacionDiaSiguiente(ProgramacionHorario p) {
+    // 2. MicroCatalogo (8081) + MicroIntervalos (8083)
+    public ProgramacionHorario registrarProgramacionDiaSiguiente(ProgramacionHorario p, int duracionMinutos) {
+        int durValida = validarDuracion(duracionMinutos);
         ProgramacionHorario guardado = rest.postForObject(URL_CATALOGO + "/grabarDiaSiguiente", p, ProgramacionHorario.class);
-        if (guardado != null && guardado.getCodProg() != null) {
+        if (guardado != null && guardado.getIdProg() != null) {
             String hIni = (guardado.getHoraInicio() != null && !guardado.getHoraInicio().isBlank()) ? guardado.getHoraInicio() : "08:00";
             String hFin = (guardado.getHoraFin() != null && !guardado.getHoraFin().isBlank()) ? guardado.getHoraFin() : "09:20";
-            String urlGen = URL_INTERVALOS + "/generar?codHor=" + guardado.getCodProg() + "&hIni=" + hIni + "&hFin=" + hFin + "&dur=20";
+            String urlGen = URL_INTERVALOS + "/generar?idHor=" + guardado.getIdProg()
+                    + "&hIni=" + hIni + "&hFin=" + hFin + "&dur=" + durValida;
             rest.postForObject(urlGen, null, IntervaloTurno[].class);
         }
         return guardado;
@@ -60,13 +83,16 @@ public class Servicio {
         return Arrays.asList(arr != null ? arr : new ProgramacionHorario[0]);
     }
 
-    public ProgramacionHorario buscarProgramacion(Long codProg) {
-        return rest.getForObject(URL_CATALOGO + "/buscar/" + codProg, ProgramacionHorario.class);
+    public ProgramacionHorario buscarProgramacion(Long idProg) {
+        if (idProg == null) {
+            return null;
+        }
+        return rest.getForObject(URL_CATALOGO + "/buscar/" + idProg, ProgramacionHorario.class);
     }
 
     // 3. MicroIntervalos (8083)
-    public List<IntervaloTurno> listarIntervalos(Long codHor) {
-        IntervaloTurno[] arr = rest.getForObject(URL_INTERVALOS + "/listar/" + codHor, IntervaloTurno[].class);
+    public List<IntervaloTurno> listarIntervalos(Long idHor) {
+        IntervaloTurno[] arr = rest.getForObject(URL_INTERVALOS + "/listar/" + idHor, IntervaloTurno[].class);
         return Arrays.asList(arr != null ? arr : new IntervaloTurno[0]);
     }
 
@@ -76,11 +102,15 @@ public class Servicio {
     }
 
     public Linea agregarFranja(Linea lin) {
+        if (lin.getCan() <= 0) {
+            lin.setCan(1);
+        }
+        lin.setDurMin(validarDuracion(lin.getDurMin()));
         return rest.postForObject(URL_CARRITO + "/agregar", lin, Linea.class);
     }
 
-    public void quitarFranja(Long codLin) {
-        rest.delete(URL_CARRITO + "/quitar/" + codLin);
+    public void quitarFranja(Long idLin) {
+        rest.delete(URL_CARRITO + "/quitar/" + idLin);
     }
 
     public List<Linea> verCesta() {
@@ -93,49 +123,93 @@ public class Servicio {
         return total != null ? total : 0;
     }
 
-    // 5. Orquestación de Confirmación de Cita del Paciente (Carrito + Intervalos + Horario)
-    public Salida confirmarCita(Entrada e) {
+    // 5. Orquestación principal -> construye DTO Salida usando los IDs de Entrada + microservicios
+    public Salida confirmarProgramacion(Entrada e) {
         List<Linea> franjas = verCesta();
         int totalMin = obtenerTotalMinutosCesta();
 
         if (franjas.isEmpty()) {
-            return new Salida(null, null, franjas, 0, "Sin franjas seleccionadas");
+            return new Salida(null, null, null, null, null, 0, "Sin franjas seleccionadas", franjas);
         }
 
+        Empleado emp = (e != null && e.getIdEmp() != null) ? buscarEmpleado(e.getIdEmp()) : null;
+        String nombrePaciente = (emp != null && emp.getNom() != null && !emp.getNom().isBlank())
+                ? emp.getNom().replace(" (Paciente)", "").trim()
+                : "Paciente";
+
+        ProgramacionHorario progEntrada = (e != null && e.getIdProg() != null) ? buscarProgramacion(e.getIdProg()) : null;
         Horario ultimoHorarioGuardado = null;
-        ProgramacionHorario progAsociada = null;
+        ProgramacionHorario progAsociada = progEntrada;
+        String ultimoMedico = null;
+        String ultimaEspecialidad = null;
 
         for (Linea lin : franjas) {
-            ProgramacionHorario prog = null;
-            if (lin.getCodProg() != null) {
-                prog = buscarProgramacion(lin.getCodProg());
-                if (prog != null) {
-                    progAsociada = prog;
-                }
+            int durLinea = validarDuracion(lin.getDurMin());
+
+            Long idProgResolver = (lin.getIdProg() != null) ? lin.getIdProg() : (e != null ? e.getIdProg() : null);
+            ProgramacionHorario prog = (idProgResolver != null) ? buscarProgramacion(idProgResolver) : progEntrada;
+            if (prog != null) {
+                progAsociada = prog;
             }
 
-            Horario nuevo = new Horario();
-            String fecha = (e.getFecAsig() != null && !e.getFecAsig().isBlank())
-                    ? e.getFecAsig()
-                    : (prog != null && prog.getFecAtencion() != null ? prog.getFecAtencion() : java.time.LocalDate.now().plusDays(1).toString());
+            String fecha = (prog != null && prog.getFecAtencion() != null && !prog.getFecAtencion().isBlank())
+                    ? prog.getFecAtencion()
+                    : LocalDate.now().plusDays(1).toString();
 
+            String medico = (prog != null && prog.getMed() != null && !prog.getMed().isBlank())
+                    ? prog.getMed()
+                    : (lin.getMed() != null && !lin.getMed().isBlank() ? lin.getMed() : "Médico Asignado");
+
+            String especialidad = (prog != null && prog.getEsp() != null && !prog.getEsp().isBlank())
+                    ? prog.getEsp()
+                    : (lin.getEsp() != null && !lin.getEsp().isBlank() ? lin.getEsp() : "General");
+
+            ultimoMedico = medico;
+            ultimaEspecialidad = especialidad;
+
+            Horario nuevo = new Horario();
             nuevo.setFecAsig(fecha);
             nuevo.setHoraCita(lin.getFranja());
-            nuevo.setEsp(lin.getEsp() != null ? lin.getEsp() : (prog != null ? prog.getEsp() : e.getEsp()));
-            nuevo.setMed(lin.getMed() != null ? lin.getMed() : (prog != null ? prog.getMed() : "Médico Turno"));
-            nuevo.setNomPaciente(e.getNomUsu() != null ? e.getNomUsu() : "Paciente Registrado");
-            nuevo.setEst("Pendiente");
-            nuevo.setCodEmp(e.getCodEmp());
+            nuevo.setEsp(especialidad);
+            nuevo.setMed(medico);
+            nuevo.setNomPaciente(nombrePaciente);
+            nuevo.setDuracionMinutos(durLinea);
+            nuevo.setEst("Programado");
+            nuevo.setIdEmp(e != null ? e.getIdEmp() : null);
 
             ultimoHorarioGuardado = rest.postForObject(URL_HORARIO + "/grabar", nuevo, Horario.class);
 
-            if (lin.getCodInt() != null) {
-                rest.put(URL_INTERVALOS + "/actualizar-estado/" + lin.getCodInt() + "?nuevoEst=Reservado", null);
+            Long idIntResolver = (lin.getIdInt() != null) ? lin.getIdInt() : (e != null ? e.getIdInt() : null);
+            if (idIntResolver != null) {
+                rest.put(URL_INTERVALOS + "/actualizar-estado/" + idIntResolver + "?nuevoEst=Reservado", null);
             }
         }
 
         nuevaCesta();
-        return new Salida(ultimoHorarioGuardado, progAsociada, franjas, totalMin, "Pendiente");
+
+        Long idHorSalida = (ultimoHorarioGuardado != null && ultimoHorarioGuardado.getIdHor() != null)
+                ? ultimoHorarioGuardado.getIdHor()
+                : (e != null ? e.getIdHor() : null);
+        String fechaSalida = (ultimoHorarioGuardado != null && ultimoHorarioGuardado.getFecAsig() != null)
+                ? ultimoHorarioGuardado.getFecAsig()
+                : (progAsociada != null ? progAsociada.getFecAtencion() : LocalDate.now().plusDays(1).toString());
+        String horaSalida = (ultimoHorarioGuardado != null && ultimoHorarioGuardado.getHoraCita() != null)
+                ? ultimoHorarioGuardado.getHoraCita()
+                : (!franjas.isEmpty() ? franjas.get(franjas.size() - 1).getFranja() : null);
+        String medicoSalida = (ultimoHorarioGuardado != null && ultimoHorarioGuardado.getMed() != null)
+                ? ultimoHorarioGuardado.getMed()
+                : ultimoMedico;
+        String espSalida = (ultimoHorarioGuardado != null && ultimoHorarioGuardado.getEsp() != null)
+                ? ultimoHorarioGuardado.getEsp()
+                : ultimaEspecialidad;
+        int durSalida = (totalMin > 0)
+                ? totalMin
+                : (ultimoHorarioGuardado != null ? ultimoHorarioGuardado.getDuracionMinutos() : 20);
+        String estadoSalida = (ultimoHorarioGuardado != null && ultimoHorarioGuardado.getEst() != null)
+                ? ultimoHorarioGuardado.getEst()
+                : "Programado";
+
+        return new Salida(idHorSalida, fechaSalida, horaSalida, medicoSalida, espSalida, durSalida, estadoSalida, franjas);
     }
 
     // 6. Consultas a MicroHorario (8085)
@@ -149,14 +223,19 @@ public class Servicio {
         return Arrays.asList(arr != null ? arr : new Horario[0]);
     }
 
-    public Horario buscarHorario(Long codHor) {
-        return rest.getForObject(URL_HORARIO + "/buscar/" + codHor, Horario.class);
+    public Horario buscarHorario(Long idHor) {
+        if (idHor == null) {
+            return null;
+        }
+        return rest.getForObject(URL_HORARIO + "/buscar/" + idHor, Horario.class);
     }
 
-    // Método heredado para mantener compatibilidad
     public HorarioCompuesto consolidar(Horario cabecera) {
         List<Linea> franjas = verCesta();
         int totalMinutos = obtenerTotalMinutosCesta();
+        if (totalMinutos > 0 && !validarDuracionPermitida(cabecera.getDuracionMinutos())) {
+            cabecera.setDuracionMinutos(totalMinutos <= 20 ? totalMinutos : 20);
+        }
         Horario horarioGuardado = rest.postForObject(URL_HORARIO + "/grabar", cabecera, Horario.class);
         nuevaCesta();
         return new HorarioCompuesto(horarioGuardado, franjas, totalMinutos);

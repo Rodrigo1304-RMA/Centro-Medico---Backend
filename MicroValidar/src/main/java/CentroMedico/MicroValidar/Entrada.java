@@ -2,23 +2,23 @@ package CentroMedico.MicroValidar;
 
 public class Entrada {
 
-    private Long codEmp;
+    private Long idEmp;
     private String pas;
 
     public Entrada() {
     }
 
-    public Entrada(Long codEmp, String pas) {
-        this.codEmp = codEmp;
+    public Entrada(Long idEmp, String pas) {
+        this.idEmp = idEmp;
         this.pas = pas;
     }
 
-    public Long getCodEmp() {
-        return codEmp;
+    public Long getIdEmp() {
+        return idEmp;
     }
 
-    public void setCodEmp(Long codEmp) {
-        this.codEmp = codEmp;
+    public void setIdEmp(Long idEmp) {
+        this.idEmp = idEmp;
     }
 
     public String getPas() {

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clínica San Gabriel - Acceso al Sistema</title>
+    <title>Centro Medico - Acceso al Sistema</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <style>
@@ -64,22 +64,22 @@
                                 <div class="table-responsive">
                                     <table class="table table-sm table-borderless text-white small mb-0">
                                         <thead>
-                                            <tr class="border-bottom border-light border-opacity-25">
-                                                <th>Código</th>
-                                                <th>Nombre</th>
-                                                <th>Rol</th>
-                                                <th>Clave</th>
-                                            </tr>
+                                        <tr class="border-bottom border-light border-opacity-25">
+                                            <th>ID</th>
+                                            <th>Nombre</th>
+                                            <th>Rol</th>
+                                            <th>Clave</th>
+                                        </tr>
                                         </thead>
                                         <tbody>
-                                            <tr th:each="u : ${usuariosDemo}">
-                                                <td class="fw-bold" th:text="${u.codEmp}">1</td>
-                                                <td th:text="${u.nom}">Usuario</td>
-                                                <td>
-                                                    <span class="badge bg-light text-dark" th:text="${u.car}">ROL</span>
-                                                </td>
-                                                <td><code class="text-warning" th:text="${u.pas}">123456</code></td>
-                                            </tr>
+                                        <tr th:each="u : ${usuariosDemo}">
+                                            <td class="fw-bold" th:text="${u.idEmp}">1</td>
+                                            <td th:text="${u.nom}">Usuario</td>
+                                            <td>
+                                                <span class="badge bg-light text-dark" th:text="${u.car}">ROL</span>
+                                            </td>
+                                            <td><code class="text-warning" th:text="${u.pas}">123456</code></td>
+                                        </tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -120,14 +120,14 @@
                             <!-- TAB 1: LOGIN -->
                             <div class="tab-pane fade show active" id="loginPane" role="tabpanel">
                                 <h5 class="fw-bold text-dark mb-1">Bienvenido al Portal Clínico</h5>
-                                <p class="text-muted small mb-4">Ingrese su Código de Usuario (`codEmp`) y contraseña para acceder según su rol.</p>
+                                <p class="text-muted small mb-4">Ingrese su ID de Usuario (<code>idEmp</code>) y contraseña para acceder según su rol.</p>
 
                                 <form th:action="@{/login}" method="post">
                                     <div class="mb-3">
-                                        <label class="form-label fw-semibold small">Código de Usuario (ID)</label>
+                                        <label class="form-label fw-semibold small">ID de Usuario (<code>idEmp</code>)</label>
                                         <div class="input-group">
                                             <span class="input-group-text bg-light"><i class="fa-solid fa-id-badge text-primary"></i></span>
-                                            <input type="number" name="codUsu" class="form-control" placeholder="Ej: 1 (Empleado), 2 (Médico), 4 (Paciente)" required>
+                                            <input type="number" name="idEmp" class="form-control" placeholder="Ej: 1 (Empleado), 2 (Médico), 4 (Paciente)" required>
                                         </div>
                                     </div>
                                     <div class="mb-4">
@@ -146,12 +146,12 @@
                             <!-- TAB 2: REGISTRO DE USUARIO (3 ROLES) -->
                             <div class="tab-pane fade" id="registerPane" role="tabpanel">
                                 <h5 class="fw-bold text-dark mb-1">Alta de Personal, Médico o Paciente</h5>
-                                <p class="text-muted small mb-3">Se registrará en `MicroValidar` a través del orquestador `MicroCompuesto`.</p>
+                                <p class="text-muted small mb-3">Se registrará en <code>MicroValidar</code> a través del orquestador <code>MicroCompuesto</code>.</p>
 
                                 <form th:action="@{/registrarUsuario}" th:object="${nuevoUsuario}" method="post">
                                     <div class="mb-3">
                                         <label class="form-label fw-semibold small">Nombre Completo</label>
-                                        <input type="text" th:field="*{nom}" class="form-control" placeholder="Ej: Dr. Ricardo Palma / María Torres" required>
+                                        <input type="text" th:field="*{nom}" class="form-control" placeholder="Ej: Dr. Carlos Soto / María Torres" required>
                                     </div>
                                     <div class="row g-3 mb-3">
                                         <div class="col-md-6">

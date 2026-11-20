@@ -26,16 +26,15 @@ public class Control {
         return "login";
     }
 
-    // 1. login(codUsu: Long, pas: String): String
     @PostMapping("/login")
     public String login(
-            @RequestParam("codUsu") Long codUsu,
+            @RequestParam("idEmp") Long idEmp,
             @RequestParam("pas") String pas,
             HttpSession session,
             RedirectAttributes flash) {
-        Empleado emp = s.validarSesion(codUsu, pas);
+        Empleado emp = s.validarSesion(idEmp, pas);
         if (emp == null) {
-            flash.addFlashAttribute("error", "Credenciales inválidas. Verifique su Código de Usuario y Contraseña.");
+            flash.addFlashAttribute("error", "Credenciales inválidas. Verifique su ID de Usuario y Contraseña.");
             return "redirect:/login";
         }
         session.setAttribute("usuarioActual", emp);
@@ -48,26 +47,24 @@ public class Control {
         return "redirect:/login";
     }
 
-    // 2. registrarUsuario(u: Empleado): String
     @PostMapping("/registrarUsuario")
     public String registrarUsuario(@ModelAttribute Empleado u, RedirectAttributes flash) {
         if (u.getEspMedica() == null || u.getEspMedica().isBlank()) {
             u.setEspMedica("MEDICO".equalsIgnoreCase(u.getCar()) ? "Medicina General" : "General");
         }
         Empleado guardado = s.registrarUsuario(u);
-        if (guardado != null && guardado.getCodEmp() != null) {
-            flash.addFlashAttribute("exito", "Usuario registrado exitosamente. Tu Código de Acceso (ID) es: " + guardado.getCodEmp());
+        if (guardado != null && guardado.getIdEmp() != null) {
+            flash.addFlashAttribute("exito", "Usuario registrado exitosamente. Tu ID de Acceso es: " + guardado.getIdEmp());
         } else {
             flash.addFlashAttribute("error", "No se pudo registrar el usuario. Verifique que MicroCompuesto y MicroValidar estén activos.");
         }
         return "redirect:/login";
     }
 
-    // Dashboard Principal Unificado
     @GetMapping("/ver")
     public String ver(
             @RequestParam(value = "esp", required = false) String esp,
-            @RequestParam(value = "codHor", required = false) Long codHor,
+            @RequestParam(value = "idHor", required = false) Long idHor,
             @RequestParam(value = "nomMed", required = false) String nomMed,
             HttpSession session,
             Model m) {
@@ -87,15 +84,15 @@ public class Control {
         m.addAttribute("catalogo", catalogo);
         m.addAttribute("espFiltro", esp != null ? esp : "");
 
-        Long codProgSeleccionado = codHor;
-        if (codProgSeleccionado == null && !catalogo.isEmpty()) {
-            codProgSeleccionado = catalogo.get(0).getCodProg();
+        Long idProgSeleccionado = idHor;
+        if (idProgSeleccionado == null && !catalogo.isEmpty()) {
+            idProgSeleccionado = catalogo.get(0).getIdProg();
         }
 
-        if (codProgSeleccionado != null) {
-            m.addAttribute("progSeleccionada", s.buscarProgramacion(codProgSeleccionado));
-            m.addAttribute("intervalos", s.listarIntervalos(codProgSeleccionado));
-            m.addAttribute("codHorActual", codProgSeleccionado);
+        if (idProgSeleccionado != null) {
+            m.addAttribute("progSeleccionada", s.buscarProgramacion(idProgSeleccionado));
+            m.addAttribute("intervalos", s.listarIntervalos(idProgSeleccionado));
+            m.addAttribute("idHorActual", idProgSeleccionado);
         }
 
         m.addAttribute("carrito", s.verCesta());
@@ -118,37 +115,43 @@ public class Control {
         return "programar";
     }
 
-    // 3. programarHorarioDiaSiguiente(p: ProgramacionHorario): String
     @PostMapping({"/programarHorarioDiaSiguiente", "/catalogo/agregar"})
     public String programarHorarioDiaSiguiente(
             @ModelAttribute ProgramacionHorario p,
+            @RequestParam(value = "dur", defaultValue = "20") int dur,
             RedirectAttributes flash) {
-        ProgramacionHorario guardado = s.registrarProgramacionDiaSiguiente(p);
-        if (guardado != null && guardado.getCodProg() != null) {
-            flash.addFlashAttribute("exito", "Programación #" + guardado.getCodProg() + " registrada para el día siguiente y turnos de <= 20 min generados automáticamente.");
-            return "redirect:/ver?codHor=" + guardado.getCodProg();
+        if (!s.validarDuracionPermitida(dur)) {
+            flash.addFlashAttribute("error", "La duración del intervalo solo puede ser de 10, 15 o máximo 20 minutos.");
+            return "redirect:/ver";
+        }
+        ProgramacionHorario guardado = s.registrarProgramacionDiaSiguiente(p, dur);
+        if (guardado != null && guardado.getIdProg() != null) {
+            flash.addFlashAttribute("exito", "Programación #" + guardado.getIdProg() + " registrada y turnos de " + dur + " min generados.");
+            return "redirect:/ver?idHor=" + guardado.getIdProg();
         }
         flash.addFlashAttribute("error", "Error al registrar la programación médica.");
         return "redirect:/ver";
     }
 
-    // 4. filtrarPorEspecialidad(esp: String): String
     @GetMapping("/filtrarPorEspecialidad")
     public String filtrarPorEspecialidad(@RequestParam(value = "esp", required = false, defaultValue = "") String esp) {
         return "redirect:/ver?esp=" + esp;
     }
 
-    // 5. seleccionarIntervalo(lin: Linea): String
     @PostMapping({"/seleccionarIntervalo", "/cesta/agregar"})
     public String seleccionarIntervalo(@ModelAttribute Linea lin, RedirectAttributes flash) {
-        s.agregarFranja(lin);
+        boolean ok = s.agregarFranja(lin);
+        if (!ok) {
+            flash.addFlashAttribute("error", "Duración inválida. Solo se permiten intervalos de 10, 15 o máximo 20 minutos.");
+            return "redirect:/ver?idHor=" + (lin.getIdProg() != null ? lin.getIdProg() : "");
+        }
         flash.addFlashAttribute("exito", "Turno (" + lin.getFranja() + ") agregado a tu cesta de reserva.");
-        return "redirect:/ver?codHor=" + (lin.getCodProg() != null ? lin.getCodProg() : "");
+        return "redirect:/ver?idHor=" + (lin.getIdProg() != null ? lin.getIdProg() : "");
     }
 
-    @GetMapping("/cesta/quitar/{codLin}")
-    public String quitarDeCesta(@PathVariable Long codLin, RedirectAttributes flash) {
-        s.quitarFranja(codLin);
+    @GetMapping("/cesta/quitar/{idLin}")
+    public String quitarDeCesta(@PathVariable Long idLin, RedirectAttributes flash) {
+        s.quitarFranja(idLin);
         flash.addFlashAttribute("exito", "Turno retirado de la cesta.");
         return "redirect:/ver";
     }
@@ -159,13 +162,13 @@ public class Control {
         return "redirect:/ver";
     }
 
-    // 6. confirmarCitaPaciente(codPac: Long, nomPac: String): String
     @PostMapping("/confirmarCitaPaciente")
     public String confirmarCitaPaciente(
-            @RequestParam("codPac") Long codPac,
-            @RequestParam("nomPac") String nomPac,
-            @RequestParam(value = "fecAsig", required = false) String fecAsig,
-            @RequestParam(value = "esp", required = false) String esp,
+            @RequestParam(value = "idEmp", required = false) Long idEmp,
+            @RequestParam(value = "idProg", required = false) Long idProg,
+            @RequestParam(value = "idInt", required = false) Long idInt,
+            @RequestParam(value = "idHor", required = false) Long idHor,
+            @RequestParam(value = "pas", required = false) String pas,
             Model m,
             RedirectAttributes flash) {
 
@@ -175,14 +178,17 @@ public class Control {
             return "redirect:/ver";
         }
 
-        Entrada entrada = new Entrada(codPac, nomPac, null, "PACIENTE", null, fecAsig, esp);
+        Long idProgRef = (idProg != null) ? idProg : cestaActual.get(0).getIdProg();
+        Long idIntRef = (idInt != null) ? idInt : cestaActual.get(0).getIdInt();
+
+        Entrada entrada = new Entrada(idEmp, idProgRef, idIntRef, idHor, pas);
         Salida salida = s.confirmarCita(entrada);
 
-        if (salida != null && salida.getHorario() != null) {
+        if (salida != null && salida.getIdHor() != null) {
             m.addAttribute("salida", salida);
-            m.addAttribute("horarioEncontrado", salida.getHorario());
-            if (salida.getProgramacion() != null && salida.getProgramacion().getCodProg() != null) {
-                m.addAttribute("turnos", s.listarIntervalos(salida.getProgramacion().getCodProg()));
+            if (idProgRef != null) {
+                m.addAttribute("programacionEncontrada", s.buscarProgramacion(idProgRef));
+                m.addAttribute("turnos", s.listarIntervalos(idProgRef));
             }
             return "detalleHorario";
         }
@@ -191,26 +197,24 @@ public class Control {
         return "redirect:/ver";
     }
 
-    // 7. verCitasPendientesMedico(nomMed: String): String
     @GetMapping("/verCitasPendientesMedico")
     public String verCitasPendientesMedico(@RequestParam("nomMed") String nomMed) {
         return "redirect:/ver?nomMed=" + nomMed;
     }
 
-    // 8. Búsqueda directa de Cita / Horario por Código
     @PostMapping("/buscarHorario")
-    public String buscarHorario(@RequestParam("codHor") Long codHor, Model m) {
-        Horario h = s.buscarHorario(codHor);
-        ProgramacionHorario p = s.buscarProgramacion(codHor);
+    public String buscarHorario(@RequestParam("idHor") Long idHor, Model m) {
+        Horario h = s.buscarHorario(idHor);
+        ProgramacionHorario p = s.buscarProgramacion(idHor);
         if (h != null) {
             m.addAttribute("horarioEncontrado", h);
         }
         if (p != null) {
             m.addAttribute("programacionEncontrada", p);
-            m.addAttribute("turnos", s.listarIntervalos(codHor));
+            m.addAttribute("turnos", s.listarIntervalos(idHor));
         }
         if (h == null && p == null) {
-            m.addAttribute("msg", "No se encontró ninguna cita ni programación registrada con el código: " + codHor);
+            m.addAttribute("msg", "No se encontró ninguna cita ni programación registrada con el ID: " + idHor);
         }
         return "detalleHorario";
     }

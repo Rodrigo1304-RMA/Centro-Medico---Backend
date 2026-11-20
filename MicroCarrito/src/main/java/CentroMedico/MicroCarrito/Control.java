@@ -22,9 +22,9 @@ public class Control {
         return s.agregar(lin);
     }
 
-    @DeleteMapping("/quitar/{codLin}")
-    public void quitar(@PathVariable Long codLin) {
-        s.quitar(codLin);
+    @DeleteMapping("/quitar/{idLin}")
+    public void quitar(@PathVariable Long idLin) {
+        s.quitar(idLin);
     }
 
     @DeleteMapping({"/limpiar", "/nuevo"})

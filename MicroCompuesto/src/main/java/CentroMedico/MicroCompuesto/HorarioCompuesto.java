@@ -17,27 +17,27 @@ public class HorarioCompuesto {
         this.duracionTotalMinutos = duracionTotalMinutos;
     }
 
-    public Horario getHorario() {
-        return horario;
+    public Horario getHorario() { 
+        return horario; 
     }
-
+    
     public void setHorario(Horario horario) {
-        this.horario = horario;
+        this.horario = horario; 
     }
 
-    public List<Linea> getFranjas() {
-        return franjas;
+    public List<Linea> getFranjas() { 
+        return franjas; 
     }
-
+    
     public void setFranjas(List<Linea> franjas) {
-        this.franjas = franjas;
+        this.franjas = franjas; 
     }
 
-    public int getDuracionTotalMinutos() {
-        return duracionTotalMinutos;
+    public int getDuracionTotalMinutos() { 
+        return duracionTotalMinutos; 
     }
-
-    public void setDuracionTotalMinutos(int duracionTotalMinutos) {
+    
+    public void setDuracionTotalMinutos(int duracionTotalMinutos) { 
         this.duracionTotalMinutos = duracionTotalMinutos;
     }
 }

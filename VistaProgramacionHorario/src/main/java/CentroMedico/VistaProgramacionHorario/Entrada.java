@@ -2,80 +2,60 @@ package CentroMedico.VistaProgramacionHorario;
 
 public class Entrada {
 
-    private Long codEmp;
-    private String nomUsu;
+    private Long idEmp;
+    private Long idProg;
+    private Long idInt;
+    private Long idHor;
     private String pas;
-    private String rol;
-    private Long codHor;
-    private String fecAsig;
-    private String esp;
 
     public Entrada() {
     }
 
-    public Entrada(Long codEmp, String nomUsu, String pas, String rol, Long codHor, String fecAsig, String esp) {
-        this.codEmp = codEmp;
-        this.nomUsu = nomUsu;
+    public Entrada(Long idEmp, Long idProg, Long idInt, Long idHor, String pas) {
+        this.idEmp = idEmp;
+        this.idProg = idProg;
+        this.idInt = idInt;
+        this.idHor = idHor;
         this.pas = pas;
-        this.rol = rol;
-        this.codHor = codHor;
-        this.fecAsig = fecAsig;
-        this.esp = esp;
     }
 
-    public Long getCodEmp() {
-        return codEmp;
+    public Long getIdEmp() { 
+        return idEmp; 
+    }
+    
+    public void setIdEmp(Long idEmp) { 
+        this.idEmp = idEmp;
     }
 
-    public void setCodEmp(Long codEmp) {
-        this.codEmp = codEmp;
+    public Long getIdProg() { 
+        return idProg; 
+    }
+    
+    public void setIdProg(Long idProg) {
+        this.idProg = idProg; 
     }
 
-    public String getNomUsu() {
-        return nomUsu;
+    public Long getIdInt() {
+        return idInt; 
+    }
+    
+    public void setIdInt(Long idInt) {
+        this.idInt = idInt; 
     }
 
-    public void setNomUsu(String nomUsu) {
-        this.nomUsu = nomUsu;
+    public Long getIdHor() { 
+        return idHor; 
+    }
+    
+    public void setIdHor(Long idHor) {
+        this.idHor = idHor;
     }
 
-    public String getPas() {
+    public String getPas() { 
         return pas;
     }
-
+    
     public void setPas(String pas) {
-        this.pas = pas;
-    }
-
-    public String getRol() {
-        return rol;
-    }
-
-    public void setRol(String rol) {
-        this.rol = rol;
-    }
-
-    public Long getCodHor() {
-        return codHor;
-    }
-
-    public void setCodHor(Long codHor) {
-        this.codHor = codHor;
-    }
-
-    public String getFecAsig() {
-        return fecAsig;
-    }
-
-    public void setFecAsig(String fecAsig) {
-        this.fecAsig = fecAsig;
-    }
-
-    public String getEsp() {
-        return esp;
-    }
-
-    public void setEsp(String esp) {
-        this.esp = esp;
+        this.pas = pas; 
     }
 }
