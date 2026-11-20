@@ -1,5 +1,7 @@
 package CentroMedico.MicroCompuesto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class Linea {
 
     private Long idLin;
@@ -53,6 +55,7 @@ public class Linea {
         this.idInt = idInt; 
     }
 
+    @JsonIgnore
     public String getMed() {
         return med; 
     }
@@ -61,6 +64,7 @@ public class Linea {
         this.med = med;
     }
 
+    @JsonIgnore
     public String getEsp() { 
         return esp;
     }

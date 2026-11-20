@@ -1,7 +1,9 @@
 package CentroMedico.MicroCompuesto;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -239,5 +241,81 @@ public class Servicio {
         Horario horarioGuardado = rest.postForObject(URL_HORARIO + "/grabar", cabecera, Horario.class);
         nuevaCesta();
         return new HorarioCompuesto(horarioGuardado, franjas, totalMinutos);
+    }
+
+    // 7. Construcción de DTO Salida con franjas pobladas (Linea: idLin, idProg, idInt, franja, durMin, can)
+    private List<Linea> construirFranjasDesdeHorario(Horario h) {
+        if (h == null || h.getHoraCita() == null || h.getHoraCita().isBlank()) {
+            return Collections.emptyList();
+        }
+
+        Long idProgEncontrado = null;
+        Long idIntEncontrado = null;
+
+        try {
+            List<ProgramacionHorario> catalogos = listarCatalogo();
+            for (ProgramacionHorario p : catalogos) {
+                boolean mismoMed = h.getMed() != null && h.getMed().equalsIgnoreCase(p.getMed());
+                boolean mismaEsp = h.getEsp() != null && h.getEsp().equalsIgnoreCase(p.getEsp());
+                boolean mismaFec = h.getFecAsig() != null && h.getFecAsig().equals(p.getFecAtencion());
+                if (mismoMed && mismaEsp && mismaFec) {
+                    idProgEncontrado = p.getIdProg();
+                    List<IntervaloTurno> turnos = listarIntervalos(p.getIdProg());
+                    for (IntervaloTurno it : turnos) {
+                        if (h.getHoraCita().equals(it.getHora())) {
+                            idIntEncontrado = it.getIdInt();
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+        } catch (Exception ignored) {
+        }
+
+        Linea linea = new Linea();
+        linea.setIdLin(h.getIdHor());
+        linea.setIdProg(idProgEncontrado != null ? idProgEncontrado : h.getIdHor());
+        linea.setIdInt(idIntEncontrado != null ? idIntEncontrado : h.getIdHor());
+        linea.setFranja(h.getHoraCita());
+        linea.setDurMin(h.getDuracionMinutos());
+        linea.setCan(1);
+
+        return Collections.singletonList(linea);
+    }
+
+    public Salida verSalidaPorId(Long idHor) {
+        Horario h = buscarHorario(idHor);
+        if (h == null) {
+            return null;
+        }
+        return new Salida(
+                h.getIdHor(),
+                h.getFecAsig(),
+                h.getHoraCita(),
+                h.getMed(),
+                h.getEsp(),
+                h.getDuracionMinutos(),
+                h.getEst(),
+                construirFranjasDesdeHorario(h)
+        );
+    }
+
+    public List<Salida> listarSalidas() {
+        List<Horario> horarios = listarTodosHorarios();
+        List<Salida> salidas = new ArrayList<>();
+        for (Horario h : horarios) {
+            salidas.add(new Salida(
+                    h.getIdHor(),
+                    h.getFecAsig(),
+                    h.getHoraCita(),
+                    h.getMed(),
+                    h.getEsp(),
+                    h.getDuracionMinutos(),
+                    h.getEst(),
+                    construirFranjasDesdeHorario(h)
+            ));
+        }
+        return salidas;
     }
 }

@@ -124,4 +124,14 @@ public class Control {
     public HorarioCompuesto confirmarHorario(@RequestBody Horario h) {
         return s.consolidar(h);
     }
+    
+    @GetMapping("/salida/{idHor}")
+    public Salida verSalida(@PathVariable Long idHor) {
+        return s.verSalidaPorId(idHor);
+    }
+
+    @GetMapping("/salida/todos")
+    public List<Salida> listarSalidas() {
+        return s.listarSalidas();
+    }
 }
